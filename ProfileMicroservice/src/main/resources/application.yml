@@ -1,0 +1,55 @@
+server:
+  port: 8082
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+spring:
+  liquibase:
+    enabled: true
+    change-log: db/changelog/db.changelog-master.yml
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092,localhost:9094
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+  application:
+    name: profile-service
+  config:
+    import: 'optional:configserver:http://localhost:8888'
+  cloud:
+    config:
+      fail-fast: true
+  mvc:
+    format:
+      date: iso
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5433/profiledb
+  jpa:
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    root: info
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    registry-fetch-interval-seconds: 5
+    instance-info-replication-interval-seconds: 5
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
