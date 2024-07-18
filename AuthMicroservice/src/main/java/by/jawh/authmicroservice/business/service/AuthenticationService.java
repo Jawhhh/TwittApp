@@ -26,7 +26,7 @@ public class AuthenticationService {
 
         //TODO запрос в бд профилей для получение email по username
 
-        return jwtService.generateToken(userMapper.dtoToEntity(request));
+        return jwtService.generateToken(userMapper.registerDtoToEntity(request));
     }
 
     public String signIn(UserRequestLoginDto request) {

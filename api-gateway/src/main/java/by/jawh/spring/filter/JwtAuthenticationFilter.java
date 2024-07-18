@@ -1,4 +1,4 @@
-package by.jawh.spring.Security;
+package by.jawh.spring.filter;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -22,7 +22,7 @@ public class JwtAuthenticationFilter implements GatewayFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
-        HttpCookie jwtCookie = exchange.getRequest().getCookies().getFirst("Authentication");
+        HttpCookie jwtCookie = exchange.getRequest().getCookies().getFirst("jwtToken");
 
         if (jwtCookie == null) {
             return redirectToLogin(exchange);
@@ -52,13 +52,13 @@ public class JwtAuthenticationFilter implements GatewayFilter {
     public ResponseEntity<Boolean> checkValidJwtToken(String jwtToken) {
         URI url;
         try {
-            url = new URI("http://localhost:8080/api/users/validateToken?token=" + jwtToken);
+            url = new URI("http://localhost:8081/api/users/validateToken?jwtToken=" + jwtToken);
         }catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
         return restTemplate.exchange(
-                new RequestEntity<>(HttpMethod.POST, url),
+                new RequestEntity<>(HttpMethod.GET, url),
                 Boolean.class);
     }
 }

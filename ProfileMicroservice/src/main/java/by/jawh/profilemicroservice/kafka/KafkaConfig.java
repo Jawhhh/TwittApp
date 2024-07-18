@@ -1,10 +1,11 @@
 package by.jawh.profilemicroservice.kafka;
 
+import by.jawh.eventsforalltopics.events.UserRegisteredEvent;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -14,7 +15,6 @@ import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.FixedBackOff;
 
 import java.util.HashMap;
@@ -40,23 +40,10 @@ public class KafkaConfig {
                 JsonDeserializer.class);
         config.put(JsonDeserializer.TRUSTED_PACKAGES,
                 environment.getProperty("spring.kafka.consumer.properties.spring.json.trusted.packages"));
+        config.put(ConsumerConfig.GROUP_ID_CONFIG,
+                environment.getProperty("spring.kafka.consumer.group-id"));
 
         return new DefaultKafkaConsumerFactory<>(config);
-    }
-
-    @Bean
-    ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(
-            ConsumerFactory<String, Object> consumerFactory, KafkaTemplate kafkaTemplate) {
-
-        DefaultErrorHandler errorHandler = new DefaultErrorHandler(
-                new DeadLetterPublishingRecoverer(kafkaTemplate),
-                new FixedBackOff(2000, 5));
-
-        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory);
-        factory.setCommonErrorHandler(errorHandler);
-
-        return factory;
     }
 
     @Bean
@@ -64,14 +51,33 @@ public class KafkaConfig {
         Map<String, Object> config = new HashMap<>();
 
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                environment.getProperty("spring.kafka.consumer.bootstrap-servers"));
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return new DefaultKafkaProducerFactory<>(config);
+                environment.getProperty("spring.kafka.producer.bootstrap-servers"));
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+                environment.getProperty("spring.kafka.producer.key-serializer"));
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                environment.getProperty("spring.kafka.producer.value-serializer"));
+        return new DefaultKafkaProducerFactory<String, Object>(config);
     }
 
     @Bean
     KafkaTemplate<String, Object> kafkaTemplate(ProducerFactory<String, Object> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
+    }
+
+    @Bean
+    ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(
+            ConsumerFactory<String, Object> consumerFactory, KafkaTemplate<String, Object> kafkaTemplate) {
+
+        DefaultErrorHandler errorHandler = new DefaultErrorHandler(
+                new DeadLetterPublishingRecoverer(
+                        kafkaTemplate,
+                        (record, exception) -> new TopicPartition("user-registered-events-topic.DLT", record.partition())),
+                new FixedBackOff(2000, 5));
+
+        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory);
+        factory.setCommonErrorHandler(errorHandler);
+
+        return factory;
     }
 }

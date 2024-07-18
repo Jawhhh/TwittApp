@@ -2,19 +2,19 @@ package by.jawh.authmicroservice.business.service;
 
 import by.jawh.authmicroservice.business.dto.UserRequestLoginDto;
 import by.jawh.authmicroservice.business.dto.UserRequestRegisterDto;
-import by.jawh.authmicroservice.business.dto.UserResponseRegisterDto;
+import by.jawh.authmicroservice.business.dto.UserResponseDto;
 
 import java.util.List;
 
 public interface UserService {
 
-    UserResponseRegisterDto createUser(UserRequestRegisterDto userRequestRegisterDto);
+    UserResponseDto createUser(UserRequestRegisterDto userRequestRegisterDto);
 
     Boolean deleteUser(Long id);
 
-    UserRequestRegisterDto findById(Long id);
+    UserResponseDto findById(Long id);
 
-    List<UserRequestRegisterDto> findAll();
+    List<UserResponseDto> findAll();
 
-    UserRequestLoginDto updateUser(Long id, UserRequestLoginDto dto);
+    UserResponseDto updateUser(Long id, UserRequestLoginDto dto);
 }

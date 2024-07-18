@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +57,7 @@ public class JwtService {
 
     public Boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return ((username.equals(userDetails.getUsername())) && !isTokenExpired(token));
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

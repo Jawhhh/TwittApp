@@ -56,7 +56,7 @@ dependencies {
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.liquibase:liquibase-core'
     implementation 'io.minio:minio:8.5.11'
-    implementation files("C:\\Users\\Jawh\\twitterProject\\events-for-all-topics\\target\\events-for-all-topics-0.0.1-SNAPSHOT.jar")
+    implementation files("C:\\Users\\olegk\\final-project\\forpc\\events-for-all-topics\\target\\events-for-all-topics-0.0.1-SNAPSHOT.jar")
 
 
     // test

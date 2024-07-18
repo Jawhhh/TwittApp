@@ -1,11 +1,11 @@
 package by.jawh.authmicroservice.business.service;
 
+import by.jawh.authmicroservice.business.dto.UserResponseDto;
 import by.jawh.authmicroservice.common.entity.Role;
 import by.jawh.authmicroservice.common.entity.UserEntity;
 import by.jawh.authmicroservice.common.repository.UserRepository;
 import by.jawh.authmicroservice.business.dto.UserRequestLoginDto;
 import by.jawh.authmicroservice.business.dto.UserRequestRegisterDto;
-import by.jawh.authmicroservice.business.dto.UserResponseRegisterDto;
 import by.jawh.authmicroservice.business.mapper.UserMapper;
 import by.jawh.authmicroservice.business.mapper.UpdateMapper;
 import by.jawh.authmicroservice.exception.EmailAlreadyExistException;
@@ -15,7 +15,6 @@ import jakarta.ws.rs.InternalServerErrorException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -33,19 +32,19 @@ import java.util.*;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
-    private final KafkaTemplate<Long, UserRegisteredEvent> kafkaTemplate;
+    private final KafkaTemplate<String, UserRegisteredEvent> kafkaTemplate;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final UpdateMapper updateMapper;
     private final RestTemplate restTemplate;
-    private static final String EMAIL_ALREADY_EXIST_URL = "http:localhost:8082/profiles/emailExist";
+    private static final String EMAIL_ALREADY_EXIST_URL = "http://localhost:8080/profiles/emailExist";
 
     // CRUD ----------------------------
 
     @Transactional
     @Override
-    public UserResponseRegisterDto createUser(UserRequestRegisterDto userRequestRegisterDto) {
+    public UserResponseDto createUser(UserRequestRegisterDto userRequestRegisterDto) {
 
         ResponseEntity<Boolean> emailExist = restTemplate.postForEntity(
                 EMAIL_ALREADY_EXIST_URL,
@@ -60,19 +59,20 @@ public class UserServiceImpl implements UserService {
             throw new UsernameAlreadyExistException("Пользователь с таким именем уже существует");
         }
 
-        UserResponseRegisterDto responseDto = userMapper.requestToResponse(userRequestRegisterDto);
+        UserResponseDto responseDto = userMapper.registerDtoToResponse(userRequestRegisterDto);
 
         return Optional.of(userRequestRegisterDto)
                 .map(dto -> {
-                    UserEntity userEntity = userMapper.dtoToEntity(dto);
+                    UserEntity userEntity = userMapper.registerDtoToEntity(dto);
                     userEntity.setRole(Role.USER);
                     userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
                     userRepository.saveAndFlush(userEntity);
                     responseDto.setId(userEntity.getId());
+                    responseDto.setRole(userEntity.getRole());
 
-                    ProducerRecord<Long, UserRegisteredEvent> record = new ProducerRecord<>(
+                    ProducerRecord<String, UserRegisteredEvent> record = new ProducerRecord<>(
                             "user-registered-events-topic",
-                            userEntity.getId(),
+                            userEntity.getId().toString(),
                             new UserRegisteredEvent(
                                     userEntity.getId(),
                                     dto.getFirstname(),
@@ -100,22 +100,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRequestRegisterDto findById(Long id) {
+    public UserResponseDto findById(Long id) {
         return userRepository.findById(id)
-                .map(userMapper::entityToDto)
+                .map(userMapper::entityToResponseDto)
                 .orElseThrow(() -> new UsernameNotFoundException("user with id: %S not found :(".formatted(id)));
     }
 
     @Override
-    public List<UserRequestRegisterDto> findAll() {
+    public List<UserResponseDto> findAll() {
         return userRepository.findAll().stream()
-                .map(userMapper::entityToDto)
+                .map(userMapper::entityToResponseDto)
                 .toList();
     }
 
     @Transactional
     @Override
-    public UserRequestLoginDto updateUser(Long id, UserRequestLoginDto dto) {
+    public UserResponseDto updateUser(Long id, UserRequestLoginDto dto) {
         Optional<UserEntity> byUsername = userRepository.findByUsername(dto.getUsername());
 
         if (byUsername.isPresent() && !Objects.equals(byUsername.get().getId(), id)) {
@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
                 .map(entity -> {
                     updateMapper.updateEntity(entity, dto);
                     userRepository.saveAndFlush(entity);
-                    return dto;
+                    return userMapper.entityToResponseDto(entity);
                 })
                 .orElseThrow(() -> new UsernameNotFoundException("user with id: %S not found :(".formatted(id)));
     }

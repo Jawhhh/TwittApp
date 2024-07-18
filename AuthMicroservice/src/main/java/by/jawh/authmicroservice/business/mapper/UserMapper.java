@@ -1,8 +1,9 @@
 package by.jawh.authmicroservice.business.mapper;
 
+import by.jawh.authmicroservice.business.dto.UserRequestLoginDto;
 import by.jawh.authmicroservice.common.entity.UserEntity;
 import by.jawh.authmicroservice.business.dto.UserRequestRegisterDto;
-import by.jawh.authmicroservice.business.dto.UserResponseRegisterDto;
+import by.jawh.authmicroservice.business.dto.UserResponseDto;
 import org.mapstruct.Mapper;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
@@ -13,9 +14,13 @@ import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
         )
 public interface UserMapper {
 
-    UserRequestRegisterDto entityToDto(UserEntity userEntity);
+    UserRequestRegisterDto entityToRequestDto(UserEntity userEntity);
 
-    UserEntity dtoToEntity(UserRequestRegisterDto userRequestRegisterDto);
+    UserResponseDto entityToResponseDto(UserEntity userEntity);
 
-    UserResponseRegisterDto requestToResponse(UserRequestRegisterDto requestDto);
+    UserEntity loginDtoToEntity(UserRequestLoginDto userRequestRegisterDto);
+
+    UserEntity registerDtoToEntity(UserRequestRegisterDto userRequestRegisterDto);
+
+    UserResponseDto registerDtoToResponse(UserRequestRegisterDto requestDto);
 }

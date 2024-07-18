@@ -1,7 +1,6 @@
 package by.jawh.eventsforalltopics.events;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class UserRegisteredEvent {
 
@@ -11,23 +10,22 @@ public class UserRegisteredEvent {
 
     private String lastname;
 
-    private String username;
+    private String email;
 
     private LocalDate bornDate;
 
-    public UserRegisteredEvent(Long id) {
-        this.id = id;
+    public UserRegisteredEvent() {
     }
 
     public UserRegisteredEvent(Long id,
                                String firstname,
                                String lastname,
-                               String username,
+                               String email,
                                LocalDate bornDate) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
-        this.username = username;
+        this.email = email;
         this.bornDate = bornDate;
 
     }
@@ -48,12 +46,12 @@ public class UserRegisteredEvent {
         this.lastname = lastname;
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public LocalDate getBornDate() {

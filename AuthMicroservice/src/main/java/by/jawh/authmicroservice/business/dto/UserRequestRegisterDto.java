@@ -37,8 +37,4 @@ public class UserRequestRegisterDto {
     @Size(min = 4, max = 24, message = "Имя пользователя должно быть от 4 до 24 символов")
     @NotBlank(message = "Имя пользователя не может быть пустым")
     private String username;
-
-//    private List<PostTheme> interestedPostTheme;
-//
-//    private List<UserEntity> userSubscribed;
 }

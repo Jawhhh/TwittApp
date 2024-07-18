@@ -1,5 +1,6 @@
 package by.jawh.authmicroservice.controller;
 
+import by.jawh.authmicroservice.business.dto.UserResponseDto;
 import by.jawh.authmicroservice.jwt.JwtService;
 import by.jawh.authmicroservice.business.service.UserServiceImpl;
 import by.jawh.authmicroservice.business.dto.UserRequestLoginDto;
@@ -27,14 +28,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserRequestRegisterDto findById(@PathVariable("id") Long id) {
+    public ResponseEntity<?> findById(@PathVariable("id") Long id) {
         log.info("holla");
-        return userService.findById(id);
+        return ResponseEntity.ok().body(userService.findById(id));
     }
 
     @GetMapping
-    public List<UserRequestRegisterDto> findAll() {
-        return userService.findAll();
+    public ResponseEntity<?> findAll() {
+        return ResponseEntity.ok().body(userService.findAll());
     }
 
     @DeleteMapping("/{id}")
@@ -47,8 +48,8 @@ public class UserController {
         return ResponseEntity.ok().body(userService.updateUser(id, userRequestLoginDto));
     }
 
-    @PostMapping("/validateToken")
-    public ResponseEntity<Boolean> validateToken(@RequestParam(name = "token") String jwtToken) {
+    @GetMapping("/validateToken")
+    public ResponseEntity<Boolean> validateToken(@RequestParam("jwtToken") String jwtToken) {
         UserDetails userDetails = userService
                 .userDetailsService()
                 .loadUserByUsername(jwtService.extractUsername(jwtToken));

@@ -1,7 +1,6 @@
 package by.jawh.spring.config;
 
-import by.jawh.spring.Security.JwtAuthenticationFilter;
-import by.jawh.spring.Security.SimpleCorsFilter;
+import by.jawh.spring.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
@@ -14,8 +13,7 @@ public class GatewayConfig {
 
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder,
-                                           JwtAuthenticationFilter jwtAuthenticationFilter,
-                                           SimpleCorsFilter simpleCorsFilter) {
+                                           JwtAuthenticationFilter jwtAuthenticationFilter) {
 
         return builder.routes()
                 .route("profile-service-route", r -> r.path("/profiles/**")
@@ -24,7 +22,7 @@ public class GatewayConfig {
                 .route("auth-service-route", r -> r.path("/auth/**")
                         .uri("lb://auth-service"))
                 .route("auth-api-service-route", r -> r.path("/api/users/**")
-                        .uri("lb://api-users/**"))
+                        .uri("lb://auth-service"))
                 .build();
     }
 }

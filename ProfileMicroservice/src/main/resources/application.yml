@@ -8,6 +8,8 @@ springdoc:
     path: /swagger-ui.html
 
 spring:
+  application:
+    name: profile-service
   liquibase:
     enabled: true
     change-log: db/changelog/db.changelog-master.yml
@@ -18,8 +20,17 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
-  application:
-    name: profile-service
+      group-id: profile-service-group
+    producer:
+      acks: all
+      bootstrap-servers: localhost:9092,localhost:9094
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      retries: 10
+      properties:
+        delivery.timeout.ms: 20000
+        request.timeout.ms: 1000
+        linger.ms: 0
   config:
     import: 'optional:configserver:http://localhost:8888'
   cloud:

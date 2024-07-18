@@ -51,8 +51,13 @@ public class ProfileController {
     }
 
     @PostMapping("/emailExist")
-    public ResponseEntity<?> checkEmail(@RequestBody String email) {
-        return ResponseEntity.ok().body(profileRepository.findByEmail(email).isPresent());
+    public ResponseEntity<Boolean> checkEmail(@RequestBody String email) {
+        if (profileRepository.findByEmail(email).isEmpty())
+            return ResponseEntity.ok().body(true);
+        else if (profileRepository.findByEmail(email).isPresent())
+            return ResponseEntity.ok().body(false);
+        else
+            throw new RuntimeException("реузльтат find by email не null и не какое то значение");
     }
 
 

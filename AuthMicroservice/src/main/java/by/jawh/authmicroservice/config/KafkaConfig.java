@@ -45,13 +45,13 @@ public class KafkaConfig {
     }
 
     @Bean
-    ProducerFactory<Long, UserRegisteredEvent> producerFactory() {
+    ProducerFactory<String, UserRegisteredEvent> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
-    KafkaTemplate<Long, UserRegisteredEvent> kafkaTemplate() {
-        return new KafkaTemplate<Long, UserRegisteredEvent>(producerFactory());
+    KafkaTemplate<String, UserRegisteredEvent> kafkaTemplate() {
+        return new KafkaTemplate<String, UserRegisteredEvent>(producerFactory());
     }
 
     @Bean
