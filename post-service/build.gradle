@@ -21,6 +21,9 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://jitpack.io"
+     }
 }
 
 ext {
@@ -33,6 +36,7 @@ dependencies {
     implementation 'org.liquibase:liquibase-core'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'org.postgresql:postgresql'
+    implementation 'io.minio:minio:8.5.11'
 
     // utils
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
@@ -47,7 +51,8 @@ dependencies {
     // other
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.kafka:spring-kafka'
-    implementation files("C:\\Users\\Jawh\\twitterProject\\events-for-all-topics\\target\\events-for-all-topics-0.0.1-SNAPSHOT.jar")
+    implementation 'com.github.Jawhhh:all-events-for-kafka:-SNAPSHOT'
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0"
 
     // test
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

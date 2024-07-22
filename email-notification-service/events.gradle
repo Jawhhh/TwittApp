@@ -1,0 +1,6 @@
+ext {
+    events = [
+        "paymentCreatedEvent": "C:\\Users\\Jawh\\IdeaProjects\\all-events\\target\\all-events-0.0.1-SNAPSHOT.jar"
+
+    ]
+}

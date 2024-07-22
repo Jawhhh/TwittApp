@@ -5,7 +5,9 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -20,7 +22,7 @@ public class PostEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private StringBuilder text;
+    private String text;
 
     private String pictureUrl;
 
@@ -31,11 +33,11 @@ public class PostEntity {
 
     @OneToMany
     @Builder.Default
-    private List<LikeEntity> like = new ArrayList<>();
+    Map<Long, LikeEntity> like = new HashMap<>();
 
     @OneToMany
     @Builder.Default
-    private List<DislikeEntity> dislike = new ArrayList<>();
+    Map<Long, DislikeEntity> dislike = new HashMap<>();
 
     @OneToMany
     @Builder.Default

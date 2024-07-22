@@ -25,10 +25,27 @@ spring:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
       hibernate:
         format_sql: true
+  kafka:
+    producer:
+      acks: all
+      bootstrap-servers: localhost:9092,localhost:9094
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      retries: 10
+      properties:
+        delivery.timeout.ms: 20000
+        request.timeout.ms: 1000
+        linger.ms: 0
 
 logging:
   level:
     root: info
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
 
 eureka:
   client:

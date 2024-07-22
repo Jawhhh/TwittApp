@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -27,7 +27,7 @@ public class CommentEntity {
     private Long postId;
 
     @Column(nullable = false)
-    private StringBuilder text;
+    private String text;
 
     private String pictureUrl;
 
@@ -36,10 +36,10 @@ public class CommentEntity {
 
     @OneToMany
     @Builder.Default
-    List<LikeEntity> like = new ArrayList<>();
+    Map<Long, LikeEntity> like = new HashMap<>();
 
     @OneToMany
     @Builder.Default
-    List<DislikeEntity> dislike = new ArrayList<>();
+    Map<Long, DislikeEntity> dislike = new HashMap<>();
 
 }
