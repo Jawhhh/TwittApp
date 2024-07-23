@@ -1,13 +1,18 @@
 package by.jawh.postservice.business.dto;
 
 import by.jawh.postservice.common.entity.CommentEntity;
-import by.jawh.postservice.common.entity.DislikeEntity;
-import by.jawh.postservice.common.entity.LikeEntity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PostResponseDto {
 
     private Long id;

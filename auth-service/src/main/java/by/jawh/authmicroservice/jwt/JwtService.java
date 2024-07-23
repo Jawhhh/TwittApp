@@ -91,7 +91,7 @@ public class JwtService {
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
-                .getBody();
+                    .getBody();
     }
 
     private Key getSigningKey() {

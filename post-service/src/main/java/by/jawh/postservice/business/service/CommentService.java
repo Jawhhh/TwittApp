@@ -1,6 +1,5 @@
 package by.jawh.postservice.business.service;
 
-import by.jawh.postservice.business.dto.CommentRequestDto;
 import by.jawh.postservice.business.dto.CommentResponseDto;
 import org.springframework.web.multipart.MultipartFile;
 

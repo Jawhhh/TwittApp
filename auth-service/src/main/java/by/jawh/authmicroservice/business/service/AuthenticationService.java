@@ -1,5 +1,6 @@
 package by.jawh.authmicroservice.business.service;
 
+import by.jawh.authmicroservice.common.entity.UserEntity;
 import by.jawh.authmicroservice.jwt.JwtService;
 import by.jawh.authmicroservice.business.dto.UserRequestLoginDto;
 import by.jawh.authmicroservice.business.dto.UserRequestRegisterDto;
@@ -22,9 +23,9 @@ public class AuthenticationService {
 
     public String signUp(UserRequestRegisterDto request) {
 
-        userService.createUser(request);
+        UserEntity user = userService.createUser(request);
 
-        return jwtService.generateToken(userMapper.registerDtoToEntity(request));
+        return jwtService.generateToken(user);
     }
 
     public String signIn(UserRequestLoginDto request) {

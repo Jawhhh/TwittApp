@@ -1,8 +1,6 @@
 package by.jawh.postservice.controller;
 
-import by.jawh.postservice.business.dto.CommentRequestDto;
 import by.jawh.postservice.business.service.impl.CommentServiceImpl;
-import jakarta.ws.rs.Path;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-//unmappedTargetPolicy = IGNORE
+
 @Mapper(
         componentModel = SPRING
         )

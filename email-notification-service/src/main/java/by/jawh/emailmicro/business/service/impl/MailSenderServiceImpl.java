@@ -28,7 +28,7 @@ public class MailSenderServiceImpl implements MailSenderService {
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom(mailFrom);
-        mailMessage.setTo(userMailSendDto.getEmailTo());
+        mailMessage.setTo(userMailSendDto.getEmail());
         mailMessage.setSubject(subject);
         mailMessage.setText(messageBody);
 
@@ -46,7 +46,7 @@ public class MailSenderServiceImpl implements MailSenderService {
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom(mailFrom);
-        mailMessage.setTo(userMailSendDto.getEmailTo());
+        mailMessage.setTo(userMailSendDto.getEmail());
         mailMessage.setSubject(subject);
         mailMessage.setText(messageBody);
 

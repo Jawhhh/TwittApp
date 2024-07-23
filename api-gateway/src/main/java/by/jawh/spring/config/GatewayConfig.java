@@ -23,6 +23,17 @@ public class GatewayConfig {
                         .uri("lb://auth-service"))
                 .route("auth-api-service-route", r -> r.path("/api/users/**")
                         .uri("lb://auth-service"))
+                .route("post-service-route", r -> r.path("/posts/**")
+//                        .filters(f -> f.filter(jwtAuthenticationFilter))
+                        .uri("lb://post-service"))
+                .route("newsfeed-service-route", r -> r.path("/newsfeed/**")
+//                        .filters(f -> f.filter(jwtAuthenticationFilter))
+                        .uri("lb://newsfeed-service"))
+                .route("email-notification-service-route", r -> r.path("/mail/**")
+                        .uri("lb://email-notification-service"))
+                .route("subscribe-service-route", r -> r.path("/sub/**")
+                        .filters(f -> f.filter(jwtAuthenticationFilter))
+                        .uri("lb://subscribe-service"))
                 .build();
     }
 }

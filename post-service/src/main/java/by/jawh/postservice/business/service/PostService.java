@@ -1,6 +1,5 @@
 package by.jawh.postservice.business.service;
 
-import by.jawh.postservice.business.dto.PostRequestDto;
 import by.jawh.postservice.business.dto.PostResponseDto;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,9 +9,13 @@ public interface PostService {
 
     PostResponseDto createPost(String text, MultipartFile picture, String token) throws Exception;
 
-    PostResponseDto findById(Long id);
+    PostResponseDto findByIdAndProfileId(Long profileId, Long id);
 
     List<PostResponseDto> findAllByProfileId(Long id);
+
+    List<PostResponseDto> findAllByCurrentProfileId(String token);
+
+    PostResponseDto findById(Long postId);
 
     PostResponseDto editPost(Long postId, String text, MultipartFile picture, String token) throws Exception;
 

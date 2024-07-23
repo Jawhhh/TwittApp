@@ -17,4 +17,10 @@ public class CustomExceptionHandler {
         log.info("throw post not found exception");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> postNotFound(Exception exception) {
+        log.info("throw someone exception");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+    }
 }

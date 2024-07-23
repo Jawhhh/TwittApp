@@ -1,5 +1,5 @@
 server:
-  port: 0
+  port: 8085
 
 spring:
   application:
@@ -16,7 +16,7 @@ spring:
     format:
       date: iso
   datasource:
-    url: jdbc:postgresql://localhost:5433/postdb
+    url: jdbc:postgresql://localhost:5434/post_db
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
@@ -36,6 +36,10 @@ spring:
         delivery.timeout.ms: 20000
         request.timeout.ms: 1000
         linger.ms: 0
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 logging:
   level:

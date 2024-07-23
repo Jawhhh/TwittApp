@@ -1,6 +1,7 @@
 package by.jawh.profilemicroservice.business.kafka;
 
 import by.jawh.eventsforalltopics.events.UserRegisteredEvent;
+import by.jawh.profilemicroservice.common.entity.MessageEntity;
 import by.jawh.profilemicroservice.common.entity.ProfileEntity;
 import by.jawh.profilemicroservice.common.repository.MessageRepository;
 import by.jawh.profilemicroservice.common.repository.ProfileRepository;
@@ -34,8 +35,8 @@ public class KafkaUserRegistrationHandler {
             log.info("kafka message with message id: %s has already been processed".formatted(messageId));
             return;
         }
-
         ProfileEntity profileEntity = profileMapper.eventToEntity(userRegisteredEvent);
         profileRepository.saveAndFlush(profileEntity);
+        messageRepository.saveAndFlush(new MessageEntity(messageId));
     }
 }

@@ -12,12 +12,6 @@ spring:
           enabled: true
           lower-case-service-id: true
 
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-  swagger-ui:
-    path: /swagger-ui.html
-
 eureka:
   instance:
     #    lease-renewal-interval-in-seconds: 1

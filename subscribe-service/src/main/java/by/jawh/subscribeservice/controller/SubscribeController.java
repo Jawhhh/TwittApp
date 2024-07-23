@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/profiles")
+@RequestMapping("/sub/profiles")
 public class SubscribeController {
 
     private final SubscribeServiceImpl subscribeService;

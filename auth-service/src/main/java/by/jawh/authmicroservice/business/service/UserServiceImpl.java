@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserResponseDto createUser(UserRequestRegisterDto userRequestRegisterDto) {
+    public UserEntity createUser(UserRequestRegisterDto userRequestRegisterDto) {
 
         ResponseEntity<Boolean> emailExist = restTemplate.postForEntity(
                 EMAIL_EXIST_URL,
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
         kafkaService.userRegisterNotificationSendEvent(userEntity, userRequestRegisterDto);
         kafkaService.userRegisteredSubscribeSendEvent(userEntity.getId());
 
-        return responseDto;
+        return userEntity;
     }
 
     @Transactional

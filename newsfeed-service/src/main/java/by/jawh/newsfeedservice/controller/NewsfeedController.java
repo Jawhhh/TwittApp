@@ -2,16 +2,14 @@ package by.jawh.newsfeedservice.controller;
 
 import by.jawh.newsfeedservice.business.service.NewsfeedService;
 import by.jawh.newsfeedservice.common.entity.Post;
+import by.jawh.newsfeedservice.common.repository.NewsfeedRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/newsfeed")
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class NewsfeedController {
 
     private final NewsfeedService newsfeedService;
+    private final NewsfeedRedisRepository newsfeedRedisRepository;
 
     @GetMapping
     public ResponseEntity<Page<Post>> getNewsfeed(@RequestParam(required = false) Long profileId,
@@ -37,5 +36,21 @@ public class NewsfeedController {
         }
 
         return ResponseEntity.ok().body(posts);
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<?> save (@RequestParam("profileId") Long profileId,
+                                   @RequestParam("id") Long id,
+                                   @RequestParam(value = "text", required = false) String text,
+                                   @RequestParam(value = "picture", required = false) String pictureUrl) {
+        return ResponseEntity.ok().body(
+                newsfeedRedisRepository.save(
+                        Post.builder()
+                                .id(id)
+                                .profileId(profileId)
+                                .text(text)
+                                .build()
+                )
+        );
     }
 }

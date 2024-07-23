@@ -1,6 +1,5 @@
 package by.jawh.postservice.common.repository;
 
-import by.jawh.postservice.business.dto.CommentResponseDto;
 import by.jawh.postservice.common.entity.CommentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 

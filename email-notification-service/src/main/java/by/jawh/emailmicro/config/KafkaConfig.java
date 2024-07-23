@@ -1,9 +1,10 @@
 package by.jawh.emailmicro.config;
 
-import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,5 +45,40 @@ public class KafkaConfig {
                 environment.getProperty("spring.kafka.consumer.properties.spring.json.trusted.packages"));
 
         return new DefaultKafkaConsumerFactory<>(config);
+    }
+
+    @Bean
+    ProducerFactory<String, Object> producerFactory() {
+        Map<String, Object> config = new HashMap<>();
+
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                environment.getProperty("spring.kafka.producer.bootstrap-servers"));
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+                environment.getProperty("spring.kafka.producer.key-serializer"));
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                environment.getProperty("spring.kafka.producer.value-serializer"));
+        return new DefaultKafkaProducerFactory<String, Object>(config);
+    }
+
+    @Bean
+    KafkaTemplate<String, Object> kafkaTemplate(ProducerFactory<String, Object> producerFactory) {
+        return new KafkaTemplate<>(producerFactory);
+    }
+
+    @Bean
+    ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(
+            ConsumerFactory<String, Object> consumerFactory, KafkaTemplate<String, Object> kafkaTemplate) {
+
+        DefaultErrorHandler errorHandler = new DefaultErrorHandler(
+                new DeadLetterPublishingRecoverer(
+                        kafkaTemplate,
+                        (record, exception) -> new TopicPartition("user-notification-events-topic.DLT", record.partition())),
+                new FixedBackOff(2000, 5));
+
+        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory);
+        factory.setCommonErrorHandler(errorHandler);
+
+        return factory;
     }
 }

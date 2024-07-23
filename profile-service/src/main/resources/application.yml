@@ -43,7 +43,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    url: jdbc:postgresql://localhost:5433/profiledb
+    url: jdbc:postgresql://localhost:5434/profile_db
   jpa:
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect

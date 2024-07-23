@@ -11,9 +11,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 @Mapper(
-        componentModel = SPRING,
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-)
+        componentModel = SPRING)
 public interface ProfileMapper {
 
     ProfileEntity eventToEntity(UserRegisteredEvent userRegisteredEvent);

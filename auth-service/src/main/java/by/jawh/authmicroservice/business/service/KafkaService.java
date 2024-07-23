@@ -52,9 +52,9 @@ public class KafkaService {
                 new UserNotificationEvent(
                         userRequestRegisterDto.getFirstname(),
                         userRequestRegisterDto.getLastname(),
-                        userRequestRegisterDto.getEmail(),
-                        userRequestRegisterDto.getUsername()
-                ));
+                        userRequestRegisterDto.getUsername(),
+                        userRequestRegisterDto.getEmail()
+                        ));
         notificationRecord.headers().add("messageId", UUID.randomUUID().toString().getBytes());
         kafkaTemplate.send(notificationRecord);
     }
@@ -70,9 +70,9 @@ public class KafkaService {
                 new UserNotificationEvent(
                         profileInfo.getFirstname(),
                         profileInfo.getLastname(),
-                        profileInfo.getEmail(),
-                        userRequestLoginDto.getUsername()
-                ));
+                        userRequestLoginDto.getUsername(),
+                        profileInfo.getEmail()
+                        ));
 
         notificationRecord.headers().add("messageId", UUID.randomUUID().toString().getBytes());
         kafkaTemplate.send(notificationRecord);

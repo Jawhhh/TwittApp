@@ -1,15 +1,16 @@
 package by.jawh.newsfeedservice.common.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@RedisHash("posts")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+//@RedisHash("posts")
 public class Post {
 
     @Id

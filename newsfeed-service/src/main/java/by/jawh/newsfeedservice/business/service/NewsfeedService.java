@@ -4,8 +4,8 @@ import by.jawh.eventsforalltopics.events.PostForNewsfeedEvent;
 import by.jawh.newsfeedservice.business.mapper.NewsfeedMapper;
 import by.jawh.newsfeedservice.common.entity.Post;
 import by.jawh.newsfeedservice.common.entity.PostEs;
-import by.jawh.newsfeedservice.common.repository.PostElasticsearchRepository;
-import by.jawh.newsfeedservice.common.repository.PostRedisRepository;
+import by.jawh.newsfeedservice.common.repository.NewsfeedElasticsearchRepository;
+import by.jawh.newsfeedservice.common.repository.NewsfeedRedisRepository;
 import by.jawh.newsfeedservice.exception.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,38 +19,37 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NewsfeedService {
 
-    private final PostRedisRepository postRedisRepository;
-    private final PostElasticsearchRepository postElasticsearchRepository;
+    private final NewsfeedRedisRepository newsfeedRedisRepository;
+    private final NewsfeedElasticsearchRepository newsfeedElasticsearchRepository;
     private final NewsfeedMapper newsfeedMapper;
 
     public void savePost(PostForNewsfeedEvent postEvent) {
 
         Post postRedis = newsfeedMapper.eventToRedisPost(postEvent);
-        postRedisRepository.save(postRedis);
-        postElasticsearchRepository.save(newsfeedMapper.redisToElasticsearch(postRedis));
+        newsfeedRedisRepository.save(postRedis);
+        newsfeedElasticsearchRepository.save(newsfeedMapper.redisToElasticsearch(postRedis));
     }
 
     public Post getPostById(Long id) {
-        return postRedisRepository.findById(id)
+        return newsfeedRedisRepository.findById(id)
                 .orElseThrow(() -> new PostNotFoundException("post with id: %s not found".formatted(id)));
     }
 
     public Page<Post> getPostByProfileId(Long profileId, Pageable pageable) {
 
-        Page<PostEs> postEsPage = postElasticsearchRepository.findByProfileId(profileId, pageable);
+        Page<PostEs> postEsPage = newsfeedElasticsearchRepository.findByProfileId(profileId, pageable);
         List<Post> posts = postEsPage.stream()
-                .map(postEs -> postRedisRepository.findById(postEs.getId()).orElse(null))
+                .map(postEs -> newsfeedRedisRepository.findById(postEs.getId()).orElse(null))
                 .toList();
 
         return new PageImpl<>(posts, pageable, postEsPage.getTotalElements());
     }
 
     public Page<Post> getAllPost(Pageable pageable) {
-        Page<PostEs> postEsPage = postElasticsearchRepository.findAll(pageable);
+        Page<PostEs> postEsPage = newsfeedElasticsearchRepository.findAll(pageable);
         List<Post> posts = postEsPage.stream()
-                .map(postEs -> postRedisRepository.findById(postEs.getId()).orElse(null))
+                .map(postEs -> newsfeedRedisRepository.findById(postEs.getId()).orElse(null))
                 .toList();
         return new PageImpl<>(posts, pageable, postEsPage.getTotalElements());
     }
-
 }

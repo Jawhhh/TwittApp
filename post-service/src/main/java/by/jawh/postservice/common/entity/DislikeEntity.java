@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "dislike")
+@Table(name = "dislike_table")
 public class DislikeEntity {
 
     @Id
