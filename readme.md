@@ -36,8 +36,8 @@ Provides functions: authorization, authentication, working with your profile, su
 
 ## get started
 ```
-$ git clone salfjalj
-$ cd twittApp/docker
+$ git clone https://github.com/Jawhhh/TwittApp.git
+$ cd TwittApp/docker
 $ docker-compose up   
 ```
 	you're up, backend address by default is: http://localhost:8080
