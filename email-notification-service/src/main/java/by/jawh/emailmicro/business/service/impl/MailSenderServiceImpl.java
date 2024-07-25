@@ -4,11 +4,13 @@ import by.jawh.emailmicro.consts.MessageTemplates;
 import by.jawh.emailmicro.business.dto.UserMailSendDto;
 import by.jawh.emailmicro.business.service.MailSenderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MailSenderServiceImpl implements MailSenderService {
@@ -32,6 +34,8 @@ public class MailSenderServiceImpl implements MailSenderService {
         mailMessage.setSubject(subject);
         mailMessage.setText(messageBody);
 
+        log.info("email about registration has send to address: %s"
+                .formatted(userMailSendDto.getEmail()));
         javaMailSender.send(mailMessage);
     }
 
@@ -50,6 +54,8 @@ public class MailSenderServiceImpl implements MailSenderService {
         mailMessage.setSubject(subject);
         mailMessage.setText(messageBody);
 
+        log.info("email about login has send to address: %s"
+                .formatted(userMailSendDto.getEmail()));
         javaMailSender.send(mailMessage);
     }
 }

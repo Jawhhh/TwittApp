@@ -12,6 +12,10 @@ import by.jawh.postservice.exception.BlankPostException;
 import by.jawh.postservice.exception.PostNotFoundException;
 import by.jawh.postservice.exception.ProfileIdNotValidException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,8 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Transactional(readOnly = true)
+@Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
@@ -32,6 +37,23 @@ public class PostServiceImpl implements PostService {
     private final MinioService minioService;
     private final RedisService redisService;
 
+    @Override
+    public Page<PostResponseDto> findAll(Pageable pageable) {
+        Page<PostEntity> postsPage = postRepository.findAll(pageable);
+        List<PostResponseDto> posts = postsPage
+                .stream()
+                .map(postMapper::entityToResponseDto)
+                .toList();
+        return new PageImpl<>(posts, pageable, postsPage.getTotalElements());
+    }
+
+    @Override
+    public List<PostResponseDto> findAll() {
+        return postRepository.findAll()
+                .stream()
+                .map(postMapper::entityToResponseDto)
+                .toList();
+    }
 
     @Transactional
     @Override
@@ -60,6 +82,7 @@ public class PostServiceImpl implements PostService {
         postRepository.saveAndFlush(postEntity);
 
         redisService.save(Constants.PREFIX_CACHE_KEY_FOR_POST + profileId, postEntity.getId(), postEntity, Constants.TTL_FOR_POST);
+        log.info("create new post with profile id: %s and post id: %s".formatted(profileId, postEntity.getId()));
         return postMapper.entityToResponseDto(postEntity);
     }
 
@@ -107,6 +130,25 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Page<PostResponseDto> findAllByProfileId(Long profileId, Pageable pageable) {
+        List<PostEntity> allPostByProfileId = redisService.findAllPostByProfileId(Constants.PREFIX_CACHE_KEY_FOR_POST + profileId);
+
+        if (!allPostByProfileId.isEmpty()) {
+            List<PostResponseDto> list = allPostByProfileId.stream()
+                    .map(postMapper::entityToResponseDto)
+                    .toList();
+            return new PageImpl<>(list, pageable, list.size());
+        } else {
+        Page<PostEntity> pageEntities = postRepository.findAllByProfileId(profileId, pageable);
+        List<PostResponseDto> responseEntities = pageEntities.
+                stream()
+                .map(postMapper::entityToResponseDto)
+                .toList();
+        return new PageImpl<>(responseEntities, pageable, pageEntities.getTotalElements());
+    }
+        }
+
+    @Override
     public List<PostResponseDto> findAllByCurrentProfileId(String token) {
 
         Long profileId = authorizeService.getProfileIdFromJwt(token);
@@ -122,6 +164,27 @@ public class PostServiceImpl implements PostService {
             return postsByProfileId.stream()
                     .map(postMapper::entityToResponseDto)
                     .toList();
+        }
+    }
+
+    @Override
+    public Page<PostResponseDto> findAllByCurrentProfileId(String token, Pageable pageable) {
+
+        Long profileId = authorizeService.getProfileIdFromJwt(token);
+        List<PostEntity> allPostByProfileId = redisService.findAllPostByProfileId(Constants.PREFIX_CACHE_KEY_FOR_POST + profileId);
+
+        if (!allPostByProfileId.isEmpty()) {
+            List<PostResponseDto> list = allPostByProfileId.stream()
+                    .map(postMapper::entityToResponseDto)
+                    .toList();
+            return new PageImpl<>(list, pageable, list.size());
+        } else {
+            List<PostEntity> postsByProfileId = postRepository.findAllByProfileId(profileId);
+            redisService.saveAll(Constants.PREFIX_CACHE_KEY_FOR_POST + profileId, postsByProfileId, Constants.TTL_FOR_POST);
+            List<PostResponseDto> list = postsByProfileId.stream()
+                    .map(postMapper::entityToResponseDto)
+                    .toList();
+            return new PageImpl<>(list, pageable, list.size());
         }
     }
 
@@ -148,6 +211,7 @@ public class PostServiceImpl implements PostService {
             postRepository.saveAndFlush(postEntity);
 
             redisService.save(Constants.PREFIX_CACHE_KEY_FOR_POST + profileId, postEntity.getId(), postEntity, Constants.TTL_FOR_POST);
+            log.info("post with id: %s was changed".formatted(postEntity.getId()));
             return postMapper.entityToResponseDto(postEntity);
         } else {
             throw new ProfileIdNotValidException("you can't edit this post with current profile id");
@@ -168,6 +232,7 @@ public class PostServiceImpl implements PostService {
             postRepository.delete(postEntity);
             postRepository.flush();
             redisService.delete(Constants.PREFIX_CACHE_KEY_FOR_POST + profileId, postEntity.getId());
+            log.info("post with id: %s was deleted".formatted(postEntity.getId()));
             return true;
         } else {
             throw new ProfileIdNotValidException("you can't delete this post with current profile id");

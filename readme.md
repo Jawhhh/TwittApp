@@ -1,12 +1,12 @@
 # TwittApp
-TwittApp - это приложение основанное на микросервисной расприделительной архитектуре осуществляющее общение между микросервисами через Apache Kafka, использующее S3 Minio для хранения картинок и Redis + ElastiSearch для ленты постов.
-Предоставляет функции: авторизации, аутентификации, работа со своим профилем, подписки на другие профили, работа с постами, просмотр ленты постов и email notifications
+TwittApp — is an application based on a micro-service architecture that communicates between microservices via Apache Kafka, using S3 Minio to store images and Redis to cache posts.
+Provides functions: authorization, authentication, working with your profile, subscribing to other profiles, working with posts, viewing the feed of posts and email notifications
 
 
 # Stack 
+- Java
 - Spring: boot, cloud, web, data, security
-- redis
-- ElasticSearch
+- Redis
 - Apache Kafka
 - Postgres
 - Gradle
@@ -19,26 +19,20 @@ TwittApp - это приложение основанное на микросе�
 
 <summary>Architecture:</summary>
 
-## Основные микросервисы :
-- auth service - регистрация и аутентификация пользователей 
-- profile service - управление профилем
-- post service - управление постами, лайками, дизлайками и комментариями
-- email notification service - отправка уведомлений на эл. почту
-- newsfeed service - предоставление ленты постов 
-- subscribe service - управление подписками пользователей
+## The main microservices :
+- auth service - user registration and authentication 
+- profile service - profile management
+- post service - post management (selection of posts by various filters, pagination), likes, dislikes and comments
+- email notification service - sending notifications to email
+- subscribe service - manage user subscriptions
 
-## Вспомогательные микросервисы : 
-- Discovery service - Используется для обнаружения микросервисов, использует netflix eureka
-- Configuration management - Управление конфигурациями микросервисов, использует spring cloud config server
-- Api Gateway - Центральная точка входа для всех запросов, использует spring cloud api gateway
+## The additional microservices : 
+- Discovery service - Used to detect microservices, uses netflix eureka
+- Configuration management - Microservices configuration management, uses spring cloud config server
+- Api Gateway - Central entry point for all requests, uses spring cloud api gateway
 
 </details>
  
-
-## Manual
-you're up,  backend swagger is available at a localhost:8080/swagger-ui/index.html
-For sign in use by default: `user` `user`
-
 
 ## get started
 ```
@@ -46,3 +40,4 @@ $ git clone salfjalj
 $ cd twittApp/docker
 $ docker-compose up   
 ```
+	you're up, backend address by default is: http://localhost:8080

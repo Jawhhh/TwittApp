@@ -76,6 +76,8 @@ public class UserServiceImpl implements UserService {
         kafkaService.userRegisterNotificationSendEvent(userEntity, userRequestRegisterDto);
         kafkaService.userRegisteredSubscribeSendEvent(userEntity.getId());
 
+        log.info("user was created with id: %s and username: %s"
+                .formatted(userEntity.getId(), userEntity.getUsername()));
         return userEntity;
     }
 
@@ -87,6 +89,8 @@ public class UserServiceImpl implements UserService {
                     userRepository.delete(entity);
                     userRepository.flush();
                     restTemplate.delete(DELETE_PROFILE_URL + id);
+                    log.info("user was deleted with id: %s and username: %s"
+                            .formatted(entity.getId(), entity.getUsername()));
                     return true;
                 }).orElseThrow(() -> new UsernameNotFoundException("user with id: %S not found :(".formatted(id)));
     }
@@ -118,6 +122,8 @@ public class UserServiceImpl implements UserService {
                 .map(entity -> {
                     updateMapper.updateEntity(entity, dto);
                     userRepository.saveAndFlush(entity);
+                    log.info("user with id: %s changed some of his data"
+                            .formatted(entity.getId()));
                     return userMapper.entityToResponseDto(entity);
                 })
                 .orElseThrow(() -> new UsernameNotFoundException("user with id: %S not found :(".formatted(id)));
@@ -136,6 +142,8 @@ public class UserServiceImpl implements UserService {
         URI url = URI.create("http://localhost:8080/profiles/" + userEntity.getId());
 
         kafkaService.userLoginNotificationSendEvent(userRequestLoginDto, url);
+        log.info("user with id: %s and username: %s logged into your account"
+                .formatted(userEntity.getId(), userEntity.getUsername()));
     }
 
     public UserEntity getByUsername(String username) {

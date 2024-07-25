@@ -50,7 +50,7 @@ public class CommentServiceImpl implements CommentService {
         commentEntity.setTimePublication(LocalDateTime.now());
         commentEntity.setPostId(postId);
         commentRepository.saveAndFlush(commentEntity);
-        log.info("create new comment on post: %s".formatted(postId));
+        log.info("create new comment with profile id: %s and post: %s".formatted(profileId, postId));
         return commentMapper.entityToResponseDto(commentEntity);
     }
 
@@ -98,7 +98,7 @@ public class CommentServiceImpl implements CommentService {
         if (commentEntity.getProfileId().equals(profileId)) {
             commentRepository.delete(commentEntity);
             commentRepository.flush();
-            log.info("delete comment with id: %s on post: %s".formatted(id, postId));
+            log.info("comment with id: %s on post: %s was deleted".formatted(id, postId));
             return true;
         } else {
             throw new ProfileIdNotValidException("you can't delete this comment with current profile id");
@@ -129,7 +129,7 @@ public class CommentServiceImpl implements CommentService {
 
             commentMapper.updateEntityFromDto(commentRequestDto, commentEntity);
             commentRepository.flush();
-            log.info("edit comment with id: %s on post: %s".formatted(id, postId));
+            log.info("comment with id: %s on post: %s was changed".formatted(id, postId));
             return commentMapper.entityToResponseDto(commentEntity);
         } else {
             throw new ProfileIdNotValidException("you can't edit this comment with current profile id");

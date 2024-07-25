@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: twitter-config-server
+    name: config-server
   cloud:
     config:
       server:

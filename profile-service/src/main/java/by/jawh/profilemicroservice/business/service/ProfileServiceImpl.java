@@ -58,6 +58,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         profileMapper.updateProfileFromDto(profileRequestDto, profileEntity);
         profileRepository.saveAndFlush(profileEntity);
+        log.info("user with id: %s has changed some data about his profile".formatted(id));
         return true;
     }
 
@@ -69,6 +70,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .map(entity -> {
                     profileRepository.delete(entity);
                     profileRepository.flush();
+                    log.info("profile with id: %s was deleted".formatted(id));
                     return true;
                 })
                 .orElseThrow(() -> new ProfileNotFoundException(
@@ -90,6 +92,7 @@ public class ProfileServiceImpl implements ProfileService {
 
 //        profileEntity.setAvatarUrl("http://localhost:9000/%s/%s".formatted(bucketName, objectName));
         profileRepository.saveAndFlush(profileEntity);
+        log.info("user with id: %s upload new avatar");
         return profileEntity.getAvatarUrl();
     }
 }

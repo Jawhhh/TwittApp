@@ -38,5 +38,8 @@ public class KafkaUserRegistrationHandler {
         ProfileEntity profileEntity = profileMapper.eventToEntity(userRegisteredEvent);
         profileRepository.saveAndFlush(profileEntity);
         messageRepository.saveAndFlush(new MessageEntity(messageId));
+        log.info("profile with id: %s and email: %s was created"
+                .formatted(userRegisteredEvent.getId(),
+                        userRegisteredEvent.getEmail()));
     }
 }
