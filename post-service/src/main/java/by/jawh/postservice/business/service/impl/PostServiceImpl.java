@@ -97,8 +97,8 @@ public class PostServiceImpl implements PostService {
             PostEntity postEntity = postRepository.findById(id)
                     .orElseThrow(() ->
                             new PostNotFoundException("post with id: %s not found".formatted(id)));
-        redisService.save(Constants.PREFIX_CACHE_KEY_FOR_POST + profileId, id, postEntity, Constants.TTL_FOR_POST);
-        return postMapper.entityToResponseDto(postEntity);
+            redisService.save(Constants.PREFIX_CACHE_KEY_FOR_POST + profileId, id, postEntity, Constants.TTL_FOR_POST);
+            return postMapper.entityToResponseDto(postEntity);
         }
     }
 
@@ -117,10 +117,10 @@ public class PostServiceImpl implements PostService {
         List<PostEntity> allPostByProfileId = redisService.findAllPostByProfileId(Constants.PREFIX_CACHE_KEY_FOR_POST + profileId);
 
         if (!allPostByProfileId.isEmpty()) {
-             return allPostByProfileId.stream()
-                     .map(postMapper::entityToResponseDto)
-                     .toList();
-         } else {
+            return allPostByProfileId.stream()
+                    .map(postMapper::entityToResponseDto)
+                    .toList();
+        } else {
             List<PostEntity> postsByProfileId = postRepository.findAllByProfileId(profileId);
             redisService.saveAll(Constants.PREFIX_CACHE_KEY_FOR_POST + profileId, postsByProfileId, Constants.TTL_FOR_POST);
             return postsByProfileId.stream()
@@ -139,14 +139,14 @@ public class PostServiceImpl implements PostService {
                     .toList();
             return new PageImpl<>(list, pageable, list.size());
         } else {
-        Page<PostEntity> pageEntities = postRepository.findAllByProfileId(profileId, pageable);
-        List<PostResponseDto> responseEntities = pageEntities.
-                stream()
-                .map(postMapper::entityToResponseDto)
-                .toList();
-        return new PageImpl<>(responseEntities, pageable, pageEntities.getTotalElements());
-    }
+            Page<PostEntity> pageEntities = postRepository.findAllByProfileId(profileId, pageable);
+            List<PostResponseDto> responseEntities = pageEntities.
+                    stream()
+                    .map(postMapper::entityToResponseDto)
+                    .toList();
+            return new PageImpl<>(responseEntities, pageable, pageEntities.getTotalElements());
         }
+    }
 
     @Override
     public List<PostResponseDto> findAllByCurrentProfileId(String token) {

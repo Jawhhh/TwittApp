@@ -4,12 +4,14 @@ import by.jawh.postservice.business.dto.PostRequestDto;
 import by.jawh.postservice.business.dto.PostResponseDto;
 import by.jawh.postservice.common.entity.PostEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-@Mapper(componentModel = SPRING)
+@Mapper(componentModel = SPRING,
+        uses = {LikeMapper.class, DislikeMapper.class})
 public interface PostMapper {
 
     PostEntity requestDtoToEntity(PostRequestDto postRequestDto);

@@ -22,12 +22,9 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") Integer page,
-                                     @RequestParam(defaultValue = "10") Integer size,
-                                     @RequestParam(defaultValue = "timePublication") String sortBy) {
+    public ResponseEntity<?> findAll() {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
-        return ResponseEntity.ok().body(postService.findAll(pageable));
+        return ResponseEntity.ok().body(postService.findAll());
     }
 
     @GetMapping("/{profileId}/{postId}")
@@ -37,23 +34,15 @@ public class PostController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> findAllPostByCurrentProfile(@CookieValue("jwtToken") String token,
-                                                         @RequestParam(defaultValue = "0") Integer page,
-                                                         @RequestParam(defaultValue = "10") Integer size,
-                                                         @RequestParam(defaultValue = "timePublication") String sortBy) {
+    public ResponseEntity<?> findAllPostByCurrentProfile(@CookieValue("jwtToken") String token) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
-        return ResponseEntity.ok().body(postService.findAllByCurrentProfileId(token, pageable));
+        return ResponseEntity.ok().body(postService.findAllByCurrentProfileId(token));
     }
 
-    @GetMapping("/{profileId}")
-    public ResponseEntity<?> findAllByProfileId(@PathVariable("profileId") Long profileId,
-                                                @RequestParam(defaultValue = "0") Integer page,
-                                                @RequestParam(defaultValue = "10") Integer size,
-                                                @RequestParam(defaultValue = "timePublication") String sortBy) {
+    @GetMapping("/profiles/{profileId}")
+    public ResponseEntity<?> findAllByProfileId(@PathVariable("profileId") Long profileId) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
-        return ResponseEntity.ok().body(postService.findAllByProfileId(profileId, pageable));
+        return ResponseEntity.ok().body(postService.findAllByProfileId(profileId));
     }
 
     @PostMapping("/create")

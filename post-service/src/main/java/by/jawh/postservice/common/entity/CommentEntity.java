@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -36,10 +38,12 @@ public class CommentEntity {
 
     @OneToMany
     @Builder.Default
-    Map<Long, LikeEntity> like = new HashMap<>();
+    @Column(name = "like_id")
+    List<LikeEntity> like = new ArrayList<>();
 
     @OneToMany
     @Builder.Default
-    Map<Long, DislikeEntity> dislike = new HashMap<>();
+    @Column(name = "dislike_id")
+    List<DislikeEntity> dislike = new ArrayList<>();
 
 }

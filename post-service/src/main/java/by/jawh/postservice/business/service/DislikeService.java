@@ -4,11 +4,12 @@ import by.jawh.postservice.common.entity.CommentEntity;
 import by.jawh.postservice.common.entity.DislikeEntity;
 import by.jawh.postservice.common.entity.PostEntity;
 
+import java.util.List;
 import java.util.Map;
 
 public interface DislikeService {
 
-    void addOrRemoveDislikeOnPost(Map<Long, DislikeEntity> dislikeList, Long profileId, PostEntity postEntity);
+    void addOrRemoveDislikeOnPost(List<DislikeEntity> dislikeList, Long profileId, PostEntity postEntity);
 
-    void addOrRemoveDislikeOnComment(Map<Long, DislikeEntity> dislikeList, Long profileId, CommentEntity commentEntity);
+    void addOrRemoveDislikeOnComment(List<DislikeEntity> dislikeList, Long profileId, CommentEntity commentEntity);
 }

@@ -1,13 +1,15 @@
 package by.jawh.postservice.business.dto;
 
 import by.jawh.postservice.common.entity.CommentEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import by.jawh.postservice.common.entity.DislikeEntity;
+import by.jawh.postservice.common.entity.LikeEntity;
+import jakarta.persistence.OneToMany;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -25,9 +27,9 @@ public class PostResponseDto {
 
     private LocalDateTime timePublication;
 
-    private List<LikeDto> like;
+    List<LikeEntity> like = new ArrayList<>();
 
-    private List<DislikeDto> dislike;
+    List<DislikeEntity> dislike = new ArrayList<>();
 
     private List<CommentEntity> comment;
 }

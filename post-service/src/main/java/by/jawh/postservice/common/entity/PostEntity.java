@@ -31,15 +31,18 @@ public class PostEntity {
     @Column(nullable = false)
     private LocalDateTime timePublication;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @Builder.Default
-    Map<Long, LikeEntity> like = new HashMap<>();
+    @Column(name = "like_id")
+    List<LikeEntity> like = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @Builder.Default
-    Map<Long, DislikeEntity> dislike = new HashMap<>();
+    @Column(name = "dislike_id")
+    List<DislikeEntity> dislike = new ArrayList<>();
 
-    @OneToMany
     @Builder.Default
+    @Column(name = "comment_id")
+    @OneToMany(fetch = FetchType.LAZY)
     private List<CommentEntity> comment = new ArrayList<>();
 }

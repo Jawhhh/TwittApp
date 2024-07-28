@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,33 +22,35 @@ public class LikeServiceImpl implements LikeService {
 
     @Transactional
     @Override
-    public void addOrRemoveLikeOnPost(Map<Long, LikeEntity> likeList, Long profileId, PostEntity postEntity) {
+    public void addOrRemoveLikeOnPost(List<LikeEntity> likeList, Long profileId, PostEntity postEntity) {
 
-        if (likeList.get(profileId) == null) {
-            LikeEntity like = LikeEntity.builder().profileId(profileId).build();
-            likeRepository.saveAndFlush(like);
-
-            likeList.put(like.getProfileId(), like);
-            postEntity.setLike(likeList);
-        } else {
-            likeList.remove(profileId);
-            postEntity.setLike(likeList);
-        }
+        likeList.stream().forEach(like -> {
+            if (Objects.equals(like.getProfileId(), profileId)) {
+                likeList.remove(like);
+                postEntity.setLike(likeList);
+            } else {
+                LikeEntity newLike = LikeEntity.builder().profileId(profileId).build();
+                likeRepository.saveAndFlush(newLike);
+                likeList.add(newLike);
+                postEntity.setLike(likeList);
+            }
+        });
     }
 
     @Transactional
     @Override
-    public void addOrRemoveLikeOnComment(Map<Long, LikeEntity> likeList, Long profileId, CommentEntity commentEntity) {
+    public void addOrRemoveLikeOnComment(List<LikeEntity> likeList, Long profileId, CommentEntity commentEntity) {
 
-        if (likeList.get(profileId) == null) {
-            LikeEntity like = LikeEntity.builder().profileId(profileId).build();
-            likeRepository.saveAndFlush(like);
-
-            likeList.put(like.getProfileId(), like);
-            commentEntity.setLike(likeList);
-        } else {
-            likeList.remove(profileId);
-            commentEntity.setLike(likeList);
-        }
+        likeList.stream().forEach(like -> {
+            if (Objects.equals(like.getProfileId(), profileId)) {
+                likeList.remove(like);
+                commentEntity.setLike(likeList);
+            } else {
+                LikeEntity newLike = LikeEntity.builder().profileId(profileId).build();
+                likeRepository.saveAndFlush(newLike);
+                likeList.add(newLike);
+                commentEntity.setLike(likeList);
+            }
+        });
     }
 }

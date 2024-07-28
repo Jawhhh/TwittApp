@@ -9,8 +9,6 @@ spring:
       server:
         git:
           uri: https://github.com/Jawhhh/config.git
-          username: ${GIT_USERNAME}
-          password: ${GIT_PASSWORD}
           refresh-rate: 5
           default-label: main
           search-paths: "{application}"

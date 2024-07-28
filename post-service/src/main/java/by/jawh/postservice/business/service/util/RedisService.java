@@ -43,10 +43,16 @@ public class RedisService {
             return jedis.hgetAll(cacheKey)
                     .values()
                     .stream()
-                    .map(json -> objectMapper.convertValue(json, PostEntity.class))
+                    .map(json -> {
+                        try {
+                            return objectMapper.readValue(json, PostEntity.class);
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
                     .toList();
         } catch (Exception e) {
-            throw new RuntimeException("Error while accessing Redis", e);
+            throw new RuntimeException(e);
         }
     }
 
