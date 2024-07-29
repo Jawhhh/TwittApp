@@ -1,15 +1,14 @@
-package by.jawh.subscribeservice.business.service;
-
-import by.jawh.eventsforalltopics.events.UserRegisteredSubscribeEvent;
-import by.jawh.subscribeservice.common.entity.ProfileSubscriptionsEntity;
-
-public interface SubscribeService {
-
-    ProfileSubscriptionsEntity saveProfile(UserRegisteredSubscribeEvent userRegisteredSubscribeEvent);
-
-    ProfileSubscriptionsEntity subscribe(Long profileId, Long subscriberId);
-
-    ProfileSubscriptionsEntity unsubscribe(Long profileId, Long unsubscriberId);
-
-    ProfileSubscriptionsEntity findById(Long profileId);
-}
+//package by.jawh.subscribeservice.business.service;
+//
+//import by.jawh.eventsforalltopics.events.UserRegisteredSubscribeEvent;
+//
+//public interface SubscribeService {
+//
+//    ProfileEntity saveProfile(UserRegisteredSubscribeEvent userRegisteredSubscribeEvent);
+//
+//    ProfileEntity subscribe(Long profileId, String token);
+//
+//    ProfileEntity unsubscribe(Long profileId, String token);
+//
+//    ProfileEntity findByCurrentId(String token);
+//}

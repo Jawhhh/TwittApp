@@ -23,8 +23,6 @@ public interface PostService {
 
     Boolean deletePost(Long postId, String token);
 
-    PostResponseDto dislikeIt(Long id, String token);
-
     PostResponseDto likeIt(Long id, String token);
 
     Page<PostResponseDto> findAllByProfileId(Long profileId, Pageable pageable);

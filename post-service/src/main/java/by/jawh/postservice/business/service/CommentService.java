@@ -23,5 +23,4 @@ public interface CommentService {
 
     CommentResponseDto likeIt(Long postId, Long id, String token);
 
-    CommentResponseDto dislikeIt(Long postId, Long id, String token);
 }

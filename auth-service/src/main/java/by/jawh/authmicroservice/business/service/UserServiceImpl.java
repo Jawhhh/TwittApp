@@ -10,6 +10,7 @@ import by.jawh.authmicroservice.business.dto.UserRequestRegisterDto;
 import by.jawh.authmicroservice.business.mapper.UserMapper;
 import by.jawh.authmicroservice.business.mapper.UpdateMapper;
 import by.jawh.authmicroservice.exception.EmailAlreadyExistsException;
+import by.jawh.authmicroservice.exception.PasswordInvalidException;
 import by.jawh.authmicroservice.exception.UsernameAlreadyExistsException;
 import by.jawh.eventsforalltopics.events.UserNotificationEvent;
 import by.jawh.eventsforalltopics.events.UserRegisteredEvent;
@@ -133,17 +134,18 @@ public class UserServiceImpl implements UserService {
 
     public void login(UserRequestLoginDto userRequestLoginDto) {
 
-        UserEntity userEntity = userRepository
-                .findAllByUsernameAndPassword(
-                        userRequestLoginDto.getUsername(),
-                        passwordEncoder.encode(userRequestLoginDto.getPassword()))
-                .orElseThrow(() -> new RuntimeException("Неправельные имя пользователя или пароль"));
+        UserEntity user = getByUsername(userRequestLoginDto.getUsername());
 
-        URI url = URI.create("http://localhost:8080/profiles/" + userEntity.getId());
+        if (passwordEncoder.matches(userRequestLoginDto.getPassword(), user.getPassword())) {
 
-        kafkaService.userLoginNotificationSendEvent(userRequestLoginDto, url);
-        log.info("user with id: %s and username: %s logged into your account"
-                .formatted(userEntity.getId(), userEntity.getUsername()));
+            URI url = URI.create("http://localhost:8082/profiles/" + user.getId());
+
+            kafkaService.userLoginNotificationSendEvent(userRequestLoginDto, url);
+            log.info("user with id: %s and username: %s logged into your account"
+                    .formatted(user.getId(), user.getUsername()));
+        } else {
+            throw new PasswordInvalidException("Неправельный пароль");
+        }
     }
 
     public UserEntity getByUsername(String username) {

@@ -9,7 +9,9 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-@Mapper(componentModel = SPRING)
+@Mapper(componentModel = SPRING,
+        uses = {LikeMapper.class, PostMapper.class},
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CommentMapper {
 
     CommentEntity responseDtoToEntity(CommentResponseDto commentResponseDto);

@@ -81,9 +81,4 @@ public class PostController {
     public ResponseEntity<?> likeIt(@PathVariable("id") Long id, @CookieValue("jwtToken") String token) {
         return ResponseEntity.ok().body(postService.likeIt(id, token));
     }
-
-    @PostMapping("/{id}//dislike")
-    public ResponseEntity<?> dislikeIt(@PathVariable("id") Long id, @CookieValue("jwtToken") String token) {
-        return ResponseEntity.ok().body(postService.dislikeIt(id, token));
-    }
 }

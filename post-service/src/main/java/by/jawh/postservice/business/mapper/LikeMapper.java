@@ -1,7 +1,8 @@
 package by.jawh.postservice.business.mapper;
 
 import by.jawh.postservice.business.dto.LikeDto;
-import by.jawh.postservice.common.entity.LikeEntity;
+import by.jawh.postservice.common.entity.CommentLikeEntity;
+import by.jawh.postservice.common.entity.PostLikeEntity;
 import org.mapstruct.Mapper;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
@@ -9,8 +10,13 @@ import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 @Mapper(componentModel = SPRING)
 public interface LikeMapper {
 
+    // * post
+    LikeDto postLikeEntityToDto(PostLikeEntity likeEntity);
 
-    LikeDto likeEntityToDto(LikeEntity likeEntity);
+    PostLikeEntity likeDtoToEntity(LikeDto likeDto);
 
-    LikeEntity likeDtoToEntity(LikeDto likeDto);
+    // * comment
+    LikeDto commentLikeEntityToDto(CommentLikeEntity likeEntity);
+
+    CommentLikeEntity commentLikeDtoToEntity(LikeDto likeDto);
 }

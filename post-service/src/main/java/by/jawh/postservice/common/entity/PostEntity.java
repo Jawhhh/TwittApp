@@ -1,14 +1,21 @@
 package by.jawh.postservice.common.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
+@NamedEntityGraph(name = "withLikeAndComments", attributeNodes = {
+        @NamedAttributeNode("like"),
+        @NamedAttributeNode("comment")
+
+})
 @Entity
 @Getter
 @Setter
@@ -31,18 +38,11 @@ public class PostEntity {
     @Column(nullable = false)
     private LocalDateTime timePublication;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @Builder.Default
-    @Column(name = "like_id")
-    List<LikeEntity> like = new ArrayList<>();
+    @JsonManagedReference
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<PostLikeEntity> like = new TreeSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @Builder.Default
-    @Column(name = "dislike_id")
-    List<DislikeEntity> dislike = new ArrayList<>();
-
-    @Builder.Default
-    @Column(name = "comment_id")
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<CommentEntity> comment = new ArrayList<>();
+    @JsonManagedReference
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<CommentEntity> comment = new TreeSet<>();
 }

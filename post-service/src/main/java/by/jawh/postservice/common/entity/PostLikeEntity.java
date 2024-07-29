@@ -1,5 +1,6 @@
 package by.jawh.postservice.common.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,8 +10,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "like_table")
-public class LikeEntity {
+@Table(name = "post_like_table")
+public class PostLikeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,4 +19,9 @@ public class LikeEntity {
 
     @Column(nullable = false)
     private Long profileId;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(referencedColumnName = "id")
+    private PostEntity post;
 }

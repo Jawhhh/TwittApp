@@ -3,101 +3,117 @@ package by.jawh.subscribeservice.business.service.impl;
 import by.jawh.eventsforalltopics.events.UserRegisteredSubscribeEvent;
 import by.jawh.subscribeservice.business.mapper.SubscribeMapper;
 import by.jawh.subscribeservice.business.service.SubscribeService;
-import by.jawh.subscribeservice.common.entity.ProfileSubscriptionsEntity;
-import by.jawh.subscribeservice.common.repository.ProfileSubscriptionsRepository;
 import by.jawh.subscribeservice.exception.ProfileAlreadyExistsException;
 import by.jawh.subscribeservice.exception.ProfileNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SubscribeServiceImpl implements SubscribeService {
 
-    private final ProfileSubscriptionsRepository profileSubscriptionsRepository;
+    private final ProfileRepository profileRepository;
+    private final SubscriberRepository subscriberRepository;
+    private final PublisherRepository publisherRepository;
     private final SubscribeMapper subscribeMapper;
+    private final AuthorizeService authorizeService;
 
 
 
-
+    @Transactional
     @Override
-    public ProfileSubscriptionsEntity saveProfile(UserRegisteredSubscribeEvent userRegisteredSubscribeEvent) {
-        if (profileSubscriptionsRepository.findById(userRegisteredSubscribeEvent.getId()).isPresent()) {
+    public ProfileEntity saveProfile(UserRegisteredSubscribeEvent userRegisteredSubscribeEvent) {
+        if (profileRepository.findById(userRegisteredSubscribeEvent.getId()).isPresent()) {
             throw new ProfileAlreadyExistsException(
                     "profile with id: %s already exists".formatted(userRegisteredSubscribeEvent.getId()));
         } else {
-            ProfileSubscriptionsEntity profileSubscriptionsEntity =
+            ProfileEntity profileEntity =
                     subscribeMapper.eventToEntity(userRegisteredSubscribeEvent);
-
-            return profileSubscriptionsRepository.save(profileSubscriptionsEntity);
+            log.info("profile with id: %s was saves".formatted(profileEntity.getProfileId()));
+            return profileRepository.save(profileEntity);
         }
     }
 
+    @Transactional
     @Override
-    public ProfileSubscriptionsEntity subscribe(Long profileId, Long subscriberId) {
+    public ProfileEntity subscribe(Long publisherId, String token) {
 
-        ProfileSubscriptionsEntity profileForSubEntity = profileSubscriptionsRepository
-                .findById(profileId)
+
+        PublisherEntity publisher = publisherRepository
+                .findById(publisherId)
                 .orElseThrow(() -> new ProfileNotFoundException(
-                        "profile with id: %s not found".formatted(profileId)));
+                        "profile with id: %s not found".formatted(publisherId)));
 
-        ProfileSubscriptionsEntity subscriberEntity = profileSubscriptionsRepository
-                .findById(subscriberId)
-                .orElseThrow(() -> new ProfileNotFoundException(
-                        "profile with id: %s not found".formatted(subscriberId)
-                ));
+        Long profileId = authorizeService.getProfileIdFromJwt(token);
 
-        // * add subscriber in need profile
-        Map<Long, Long> subscribersIds = profileForSubEntity.getSubscribersIds();
-        subscribersIds.put(subscriberId, subscriberId);
-        profileForSubEntity.setSubscribersIds(subscribersIds);
-
-        // * add subscription in subscriber
-        Map<Long, Long> subscriptionsIds = subscriberEntity.getSubscriptionsIds();
-        subscriptionsIds.put(profileId, profileId);
-        subscriberEntity.setSubscribersIds(subscriptionsIds);
-
-        log.info("user with id: %s subscribed on user with id: %s"
-                .formatted(subscriberId, profileId));
-        return subscriberEntity;
-    }
-
-    @Override
-    public ProfileSubscriptionsEntity unsubscribe(Long profileId, Long unsubscriberId) {
-        ProfileSubscriptionsEntity profileForUnsubEntity = profileSubscriptionsRepository
+        ProfileEntity profile = profileRepository
                 .findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(
                         "profile with id: %s not found".formatted(profileId)
                 ));
 
-        ProfileSubscriptionsEntity unsubscriberEntity = profileSubscriptionsRepository.
+        //* устанавливаем профилю подписчика
+        Set<PublisherEntity> publisherSet = profile.getPublisher();
+        publisherSet.add(publisher);
+
+        //* устанавливаем профилю подписку
+        Set<Long> subscriptionsIds = profile.getSubscriptionsIds();
+        subscriptionsIds.add(profileId);
+
+        profileRepository.flush();
+        log.info("user with id: %s subscribed on user with id: %s"
+                .formatted(profileId, profileId));
+        return profile;
+    }
+
+    @Transactional
+    @Override
+    public ProfileEntity unsubscribe(Long profileId, String token) {
+
+        ProfileEntity profileForUnsubEntity = profileRepository
+                .findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(
+                        "profile with id: %s not found".formatted(profileId)
+                ));
+
+        Long unsubscriberId = authorizeService.getProfileIdFromJwt(token);
+
+        ProfileEntity unsubscriberEntity = profileRepository.
                 findById(unsubscriberId)
                 .orElseThrow(() -> new ProfileNotFoundException(
                         "profile with id: %s not found".formatted(unsubscriberId)
                 ));
 
-        Map<Long, Long> subscribersIds = profileForUnsubEntity.getSubscribersIds();
+       //* удаляем у профиля подписчика
+        Set<Long> subscribersIds = profileForUnsubEntity.getSubscribersIds();
         subscribersIds.remove(unsubscriberId);
-        profileForUnsubEntity.setSubscribersIds(subscribersIds);
 
-
-        Map<Long, Long> subscriptionsIds = unsubscriberEntity.getSubscriptionsIds();
+        //* удаляем у профиля подписку
+        Set<Long> subscriptionsIds = unsubscriberEntity.getSubscriptionsIds();
         subscriptionsIds.remove(profileId);
-        unsubscriberEntity.setSubscriptionsIds(subscriptionsIds);
 
+        profileRepository.flush();
         log.info("user with id: %s unsubscribed on user with id: %s"
                 .formatted(unsubscriberId, profileId));
         return unsubscriberEntity;
     }
 
-    @Override
-    public ProfileSubscriptionsEntity findById(Long profileId) {
-        return profileSubscriptionsRepository.findById(profileId)
+    public ProfileEntity findByCurrentId(String token) {
+        Long profileId = authorizeService.getProfileIdFromJwt(token);
+        return profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException(
+                        "profile with id: %s not found".formatted(profileId)
+                ));
+    }
+
+    public ProfileEntity findById(Long profileId) {
+        return profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(
                         "profile with id: %s not found".formatted(profileId)
                 ));

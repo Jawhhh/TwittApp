@@ -1,39 +1,16 @@
 server.port: 8083
 
 spring:
+  profiles:
+    default: prod
   application:
     name: email-notification-service
   config:
     import: 'optional:configserver:http://localhost:8888'
+  cloud:
+    config:
+      fail-fast: true
   mail:
-    host: smtp.yandex.ru
-    port: 465
-    protocol: smtps
-    username: testsender52@yandex.ru
     password: tvwpcaemuctkzaqb
-  kafka:
-    consumer:
-      bootstrap-servers: localhost:9092,localhost:9094
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      group-id: email-notification-events
-      properties:
-        spring.json.trusted.packages: "*"
-    producer:
-      bootstrap-servers: localhost:9092,localhost:9094
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-  swagger-ui:
-    path: /swagger-ui.html
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-  instance:
-    prefer-ip-address: true
 

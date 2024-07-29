@@ -20,7 +20,7 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/registration")
-    public ResponseEntity<?> signUp(@RequestBody UserRequestRegisterDto dto, HttpServletResponse response) {
+    public ResponseEntity<?> signUp(@RequestBody @Valid UserRequestRegisterDto dto, HttpServletResponse response) {
 
         String jwt = authenticationService.signUp(dto);
         Cookie cookie = new Cookie("jwtToken", jwt);

@@ -1,14 +1,11 @@
 package by.jawh.postservice.business.dto;
 
-import by.jawh.postservice.common.entity.DislikeEntity;
-import by.jawh.postservice.common.entity.LikeEntity;
-import jakarta.persistence.OneToMany;
+import by.jawh.postservice.common.entity.CommentLikeEntity;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -28,7 +25,6 @@ public class CommentResponseDto {
 
     private LocalDateTime timePublication;
 
-    List<LikeEntity> like = new ArrayList<>();
+    List<CommentLikeEntity> like = new ArrayList<>();
 
-    List<DislikeEntity> dislike = new ArrayList<>();
 }

@@ -33,7 +33,7 @@ public class RedisService {
                 }
             });
         } catch (Exception e) {
-            throw new RuntimeException("Error while accessing Redis", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -61,7 +61,7 @@ public class RedisService {
             String json = jedis.hget(cacheKey, fieldId.toString());
             return  objectMapper.convertValue(json, PostEntity.class);
         }catch (Exception e) {
-            throw new RuntimeException("Error while accessing Redis", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -75,7 +75,7 @@ public class RedisService {
             );
             jedis.expire(cacheKey, ttl);
         } catch (Exception e) {
-            throw new  RuntimeException("Error while accessing Redis", e);
+            throw new  RuntimeException(e);
         }
     }
 
@@ -83,7 +83,7 @@ public class RedisService {
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.hdel(cacheKey, fieldId.toString());
         } catch (Exception e) {
-            throw new RuntimeException("Error while accessing Redis", e);
+            throw new RuntimeException(e);
         }
     }
 }

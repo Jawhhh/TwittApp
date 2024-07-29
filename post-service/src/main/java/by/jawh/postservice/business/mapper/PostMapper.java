@@ -11,7 +11,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 @Mapper(componentModel = SPRING,
-        uses = {LikeMapper.class, DislikeMapper.class})
+        uses = {LikeMapper.class, CommentMapper.class},
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface PostMapper {
 
     PostEntity requestDtoToEntity(PostRequestDto postRequestDto);

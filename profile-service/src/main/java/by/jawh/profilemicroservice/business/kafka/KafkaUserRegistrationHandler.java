@@ -18,7 +18,6 @@ import static org.springframework.kafka.support.KafkaHeaders.RECEIVED_KEY;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-//@KafkaListener(topics = "user-registered-events-topic", groupId = "profile-service-group")
 public class KafkaUserRegistrationHandler {
 
     private final MessageRepository messageRepository;

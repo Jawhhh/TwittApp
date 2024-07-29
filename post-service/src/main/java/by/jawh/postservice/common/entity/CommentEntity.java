@@ -1,14 +1,19 @@
 package by.jawh.postservice.common.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+@NamedEntityGraph(name = "withLikeAndPost", attributeNodes = {
+        @NamedAttributeNode("like"),
+        @NamedAttributeNode("post")
+
+})
 @Entity
 @Getter
 @Setter
@@ -25,8 +30,10 @@ public class CommentEntity {
     @Column(nullable = false)
     private Long profileId;
 
-    @Column(nullable = false)
-    private Long postId;
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private PostEntity post;
 
     @Column(nullable = false)
     private String text;
@@ -36,14 +43,7 @@ public class CommentEntity {
     @Column(nullable = false)
     private LocalDateTime timePublication;
 
-    @OneToMany
-    @Builder.Default
-    @Column(name = "like_id")
-    List<LikeEntity> like = new ArrayList<>();
-
-    @OneToMany
-    @Builder.Default
-    @Column(name = "dislike_id")
-    List<DislikeEntity> dislike = new ArrayList<>();
-
+    @JsonManagedReference
+    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, orphanRemoval = true)
+    List<CommentLikeEntity> like = new ArrayList<>();
 }

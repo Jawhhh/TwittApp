@@ -27,7 +27,6 @@ public class UserRequestRegisterDto {
     private String email;
 
     @Past(message = "Дата рождения должна быть в прошлом")
-    @NotBlank(message = "Дата рождения не может быть пустой")
     private LocalDate bornDate;
 
     @Size(min = 8, max = 20, message = "Длина пароля должна быть от 8 до 20 символов")

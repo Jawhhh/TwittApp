@@ -33,7 +33,6 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
     private final AuthorizeServiceImpl authorizeService;
     private final LikeServiceImpl likeService;
-    private final DislikeServiceImpl dislikeService;
     private final MinioService minioService;
     private final RedisService redisService;
 
@@ -250,22 +249,6 @@ public class PostServiceImpl implements PostService {
         Long profileId = authorizeService.getProfileIdFromJwt(token);
 
         likeService.addOrRemoveLikeOnPost(postEntity.getLike(), profileId, postEntity);
-        postRepository.flush();
-        redisService.save(Constants.PREFIX_CACHE_KEY_FOR_POST + profileId, postEntity.getId(), postEntity, Constants.TTL_FOR_POST);
-        return postMapper.entityToResponseDto(postEntity);
-    }
-
-    @Transactional
-    @Override
-    public PostResponseDto dislikeIt(Long id, String token) {
-
-        PostEntity postEntity = postRepository.findById(id)
-                .orElseThrow(() ->
-                        new PostNotFoundException("post with id: %s not found".formatted(id)));
-
-        Long profileId = authorizeService.getProfileIdFromJwt(token);
-
-        dislikeService.addOrRemoveDislikeOnPost(postEntity.getDislike(), profileId, postEntity);
         postRepository.flush();
         redisService.save(Constants.PREFIX_CACHE_KEY_FOR_POST + profileId, postEntity.getId(), postEntity, Constants.TTL_FOR_POST);
         return postMapper.entityToResponseDto(postEntity);

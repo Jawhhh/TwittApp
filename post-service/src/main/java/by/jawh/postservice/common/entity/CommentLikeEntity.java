@@ -1,5 +1,6 @@
 package by.jawh.postservice.common.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,8 +10,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "dislike_table")
-public class DislikeEntity {
+@Table(name = "comment_like_table")
+public class CommentLikeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,4 +19,9 @@ public class DislikeEntity {
 
     @Column(nullable = false)
     private Long profileId;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(referencedColumnName = "id")
+    private CommentEntity comment;
 }

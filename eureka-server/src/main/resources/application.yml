@@ -1,17 +1,15 @@
 server:
   port: 8761
 
-eureka:
-  server:
-    eviction-interval-timer-in-ms: 5000
-  instance:
-    hostname: localhost
-  client:
-    register-with-eureka: false
-    fetch-registry: false
-    service-url:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka
-      renewalPercentThreshold: 0.85
-#  server:
-#    enableSelfPreservation: false
+spring:
+  profiles:
+    default: prod
+  application:
+    name: eureka-server
+  config:
+    import: 'optional:configserver:http://localhost:8888'
+  cloud:
+    config:
+      fail-fast: true
+
 

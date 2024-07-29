@@ -1,15 +1,17 @@
 package by.jawh.postservice.business.service;
 
 import by.jawh.postservice.common.entity.CommentEntity;
-import by.jawh.postservice.common.entity.LikeEntity;
+import by.jawh.postservice.common.entity.CommentLikeEntity;
 import by.jawh.postservice.common.entity.PostEntity;
+import by.jawh.postservice.common.entity.PostLikeEntity;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface LikeService {
 
-    void addOrRemoveLikeOnPost(List<LikeEntity> likeList, Long profileId, PostEntity postEntity);
+    void addOrRemoveLikeOnPost(Set<PostLikeEntity> likeList, Long profileId, PostEntity postEntity);
 
-    void addOrRemoveLikeOnComment(List<LikeEntity> likeList, Long profileId, CommentEntity commentEntity);
+    void addOrRemoveLikeOnComment(List<CommentLikeEntity> likeList, Long profileId, CommentEntity commentEntity);
 }

@@ -1,6 +1,5 @@
 package by.jawh.subscribeservice.controller;
 
-import by.jawh.subscribeservice.business.service.impl.SubscribeServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,29 +9,28 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/sub/profiles")
 public class SubscribeController {
 
-    private final SubscribeServiceImpl subscribeService;
 
     @GetMapping("/current")
-    public ResponseEntity<?> findForCurrentProfileId(@CookieValue("jwtToken") Long profileId) {
-        return ResponseEntity.ok().body(subscribeService.findById(profileId));
+    public ResponseEntity<?> findForCurrentProfileId(@CookieValue("jwtToken") String token) {
+        return ResponseEntity.ok().body("");
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findByProfileId(@PathVariable("id") Long profileId) {
-        return ResponseEntity.ok().body(subscribeService.findById(profileId));
+        return ResponseEntity.ok().body("");
     }
 
     @PatchMapping("/{id}/subscribe")
     public ResponseEntity<?> subscribe(@PathVariable("id") Long profileId,
-                                       @CookieValue("jwtToken") Long subscriberId) {
+                                       @CookieValue("jwtToken") String token) {
 
-        return ResponseEntity.ok().body(subscribeService.subscribe(profileId, subscriberId));
+        return ResponseEntity.ok().body("");
     }
 
     @PatchMapping("/{id}/unsubscribe")
     public ResponseEntity<?> unsubscribe(@PathVariable("id") Long profileId,
-                                         @CookieValue("jwtToken") Long unsubscriberId) {
+                                         @CookieValue("jwtToken") String token) {
 
-        return ResponseEntity.ok().body(subscribeService.unsubscribe(profileId, unsubscriberId));
+        return ResponseEntity.ok().body("");
     }
 }

@@ -18,13 +18,6 @@ public class ProfileController {
     private final ProfileRepository profileRepository;
     private final MinioService minioService;
 
-    //TODO delete later.....
-    @GetMapping("/testGet")
-    public ResponseEntity<?> get() {
-        return ResponseEntity.ok().body("Get something from profile microservice");
-    }
-
-
     @GetMapping()
     public ResponseEntity<?> findAllProfiles() {
         return ResponseEntity.ok().body(profileService.findAll());

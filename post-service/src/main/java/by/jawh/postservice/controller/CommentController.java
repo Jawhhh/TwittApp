@@ -38,8 +38,8 @@ public class CommentController {
 
     @PostMapping("/{postId}/comments/create")
     public ResponseEntity<?> createComment(@PathVariable("postId") Long postId,
-                                           @RequestParam String text,
-                                           @RequestParam MultipartFile picture,
+                                           @RequestParam(required = false) String text,
+                                           @RequestParam(required = false) MultipartFile picture,
                                            @CookieValue("jwtToken") String token) {
 
         try {
@@ -79,13 +79,5 @@ public class CommentController {
                                     @CookieValue("jwtToken") String token) {
 
         return ResponseEntity.ok().body(commentService.likeIt(postId, commentId, token));
-    }
-
-    @PostMapping("/{postId}/comments/{commentId}/dislike")
-    public ResponseEntity<?> dislikeIt(@PathVariable("postId") Long postId,
-                                    @PathVariable("commentId") Long commentId,
-                                    @CookieValue("jwtToken") String token) {
-
-        return ResponseEntity.ok().body(commentService.dislikeIt(postId, commentId, token));
     }
 }
