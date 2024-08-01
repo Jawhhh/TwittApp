@@ -1,121 +1,115 @@
 package by.jawh.subscribeservice.business.service.impl;
 
 import by.jawh.eventsforalltopics.events.UserRegisteredSubscribeEvent;
-import by.jawh.subscribeservice.business.mapper.SubscribeMapper;
 import by.jawh.subscribeservice.business.service.SubscribeService;
-import by.jawh.subscribeservice.exception.ProfileAlreadyExistsException;
-import by.jawh.subscribeservice.exception.ProfileNotFoundException;
+import by.jawh.subscribeservice.common.entity.ProfileEntity;
+import by.jawh.subscribeservice.common.entity.UserEntity;
+import by.jawh.subscribeservice.common.repository.ProfileRepository;
+import by.jawh.subscribeservice.common.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.ProviderNotFoundException;
 import java.util.Set;
+import java.util.TreeSet;
 
-@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SubscribeServiceImpl implements SubscribeService {
 
     private final ProfileRepository profileRepository;
-    private final SubscriberRepository subscriberRepository;
-    private final PublisherRepository publisherRepository;
-    private final SubscribeMapper subscribeMapper;
+    private final UserRepository userRepository;
     private final AuthorizeService authorizeService;
 
-
-
     @Transactional
     @Override
-    public ProfileEntity saveProfile(UserRegisteredSubscribeEvent userRegisteredSubscribeEvent) {
-        if (profileRepository.findById(userRegisteredSubscribeEvent.getId()).isPresent()) {
-            throw new ProfileAlreadyExistsException(
-                    "profile with id: %s already exists".formatted(userRegisteredSubscribeEvent.getId()));
-        } else {
-            ProfileEntity profileEntity =
-                    subscribeMapper.eventToEntity(userRegisteredSubscribeEvent);
-            log.info("profile with id: %s was saves".formatted(profileEntity.getProfileId()));
-            return profileRepository.save(profileEntity);
-        }
+    public void saveProfile(UserRegisteredSubscribeEvent userRegisteredSubscribeEvent) {
+
+        userRepository.save(UserEntity
+                .builder()
+                .id(userRegisteredSubscribeEvent.getId())
+                .build());
+
+        profileRepository.saveAndFlush(ProfileEntity
+                .builder()
+                .userId(userRegisteredSubscribeEvent.getId())
+                .subscriber(new TreeSet<>())
+                .publisher(new TreeSet<>())
+                .build());
     }
 
     @Transactional
     @Override
-    public ProfileEntity subscribe(Long publisherId, String token) {
+    public boolean subscribe(String token, Long publisherId) {
 
+        Long subscriberId = authorizeService.getProfileIdFromJwt(token);
 
-        PublisherEntity publisher = publisherRepository
-                .findById(publisherId)
-                .orElseThrow(() -> new ProfileNotFoundException(
-                        "profile with id: %s not found".formatted(publisherId)));
+        // * проверка есть ли такой пользователь
+        userRepository.findById(publisherId)
+                .orElseThrow(() ->
+                        new ProviderNotFoundException("profile with id: %s not found".formatted(publisherId)));
 
-        Long profileId = authorizeService.getProfileIdFromJwt(token);
-
-        ProfileEntity profile = profileRepository
-                .findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException(
-                        "profile with id: %s not found".formatted(profileId)
-                ));
-
-        //* устанавливаем профилю подписчика
-        Set<PublisherEntity> publisherSet = profile.getPublisher();
-        publisherSet.add(publisher);
-
-        //* устанавливаем профилю подписку
-        Set<Long> subscriptionsIds = profile.getSubscriptionsIds();
-        subscriptionsIds.add(profileId);
+        profileRepository.addSubscriber(subscriberId, publisherId);
+        profileRepository.addPublisher(subscriberId, publisherId);
 
         profileRepository.flush();
-        log.info("user with id: %s subscribed on user with id: %s"
-                .formatted(profileId, profileId));
-        return profile;
+        return true;
     }
 
     @Transactional
     @Override
-    public ProfileEntity unsubscribe(Long profileId, String token) {
+    public boolean unsubscribe(String token, Long publisherId) {
 
-        ProfileEntity profileForUnsubEntity = profileRepository
-                .findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException(
-                        "profile with id: %s not found".formatted(profileId)
-                ));
+        Long subscriberId = authorizeService.getProfileIdFromJwt(token);
 
-        Long unsubscriberId = authorizeService.getProfileIdFromJwt(token);
+        UserEntity publisherUser = userRepository.findById(publisherId)
+                .orElseThrow(() ->
+                        new ProviderNotFoundException("profile with id: %s not found".formatted(publisherId)));
+        UserEntity subscriberUser = userRepository.findById(subscriberId)
+                .orElseThrow(() ->
+                        new ProviderNotFoundException("profile with id: %s not found".formatted(subscriberId)));
 
-        ProfileEntity unsubscriberEntity = profileRepository.
-                findById(unsubscriberId)
-                .orElseThrow(() -> new ProfileNotFoundException(
-                        "profile with id: %s not found".formatted(unsubscriberId)
-                ));
+        profileRepository.findById(subscriberId)
+                .map(profile -> profile.getPublisher().remove(publisherUser));
 
-       //* удаляем у профиля подписчика
-        Set<Long> subscribersIds = profileForUnsubEntity.getSubscribersIds();
-        subscribersIds.remove(unsubscriberId);
-
-        //* удаляем у профиля подписку
-        Set<Long> subscriptionsIds = unsubscriberEntity.getSubscriptionsIds();
-        subscriptionsIds.remove(profileId);
+        profileRepository.findById(publisherId)
+                .map(profile -> profile.getSubscriber().remove(subscriberUser));
 
         profileRepository.flush();
-        log.info("user with id: %s unsubscribed on user with id: %s"
-                .formatted(unsubscriberId, profileId));
-        return unsubscriberEntity;
+        return true;
     }
 
-    public ProfileEntity findByCurrentId(String token) {
+    @Override
+    public Set<UserEntity> getSubscribers(Long profileId) {
+        return profileRepository.findById(profileId)
+                .map(ProfileEntity::getSubscriber)
+                .orElseThrow(() ->
+                        new ProviderNotFoundException("profile with id: %s not found".formatted(profileId)));
+    }
+
+    @Override
+    public Set<UserEntity> getPublishers(Long profileId) {
+        return profileRepository.findById(profileId)
+                .map(ProfileEntity::getPublisher)
+                .orElseThrow(() ->
+                        new ProviderNotFoundException("profile with id: %s not found".formatted(profileId)));
+    }
+
+    @Override
+    public ProfileEntity findByCurrentUser(String token) {
         Long profileId = authorizeService.getProfileIdFromJwt(token);
         return profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException(
-                        "profile with id: %s not found".formatted(profileId)
-                ));
+                .orElseThrow(() ->
+                        new ProviderNotFoundException("profile with id: %s not found".formatted(profileId)));
     }
 
     public ProfileEntity findById(Long profileId) {
         return profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException(
-                        "profile with id: %s not found".formatted(profileId)
-                ));
+                .orElseThrow(() ->
+                        new ProviderNotFoundException("profile with id: %s not found".formatted(profileId)));
     }
+
+
 }

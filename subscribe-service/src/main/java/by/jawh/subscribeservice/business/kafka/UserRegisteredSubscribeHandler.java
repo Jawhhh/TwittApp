@@ -1,6 +1,7 @@
 package by.jawh.subscribeservice.business.kafka;
 
 import by.jawh.eventsforalltopics.events.UserRegisteredSubscribeEvent;
+import by.jawh.subscribeservice.business.service.impl.SubscribeServiceImpl;
 import by.jawh.subscribeservice.common.entity.kafkaMessagesEntity;
 import by.jawh.subscribeservice.common.repository.KafkaMessagesRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import static org.springframework.kafka.support.KafkaHeaders.RECEIVED_KEY;
 public class UserRegisteredSubscribeHandler {
 
     private final KafkaMessagesRepository kafkaMessagesRepository;
+    private final SubscribeServiceImpl subscribeService;
 
     @KafkaListener(topics = "user-registered-subscribe-events-topic")
     public void profileCreateHandle(@Payload UserRegisteredSubscribeEvent userRegisteredSubscribeEvent,
@@ -30,6 +32,7 @@ public class UserRegisteredSubscribeHandler {
             return;
         }
 
+        subscribeService.saveProfile(userRegisteredSubscribeEvent);
         kafkaMessagesRepository.saveAndFlush(new kafkaMessagesEntity(messageId));
     }
 }

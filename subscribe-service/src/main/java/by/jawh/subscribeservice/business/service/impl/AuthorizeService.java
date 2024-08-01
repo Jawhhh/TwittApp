@@ -11,7 +11,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class AuthorizeService {
 
-    private static final URI jwtExtractId = URI.create("http://localhost:8080/auth/jwt/getId");
+    private static final URI jwtExtractId = URI.create("http://localhost:8081/auth/jwt/getId");
     private final RestTemplate restTemplate;
 
     public Long getProfileIdFromJwt(String token) {
