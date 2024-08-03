@@ -26,6 +26,8 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
     implementation 'org.springframework.cloud:spring-cloud-starter-parent:2023.0.2'
 
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

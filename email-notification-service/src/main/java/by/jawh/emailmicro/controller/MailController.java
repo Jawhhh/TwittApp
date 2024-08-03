@@ -4,10 +4,7 @@ import by.jawh.emailmicro.business.dto.UserMailSendDto;
 import by.jawh.emailmicro.business.service.impl.MailSenderServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/mail")
@@ -15,6 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MailController {
 
     private final MailSenderServiceImpl mailSenderService;
+
+    @GetMapping("/health")
+    public ResponseEntity<?> healthCheck() {
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("/send")
     public ResponseEntity<?> sendMail(@RequestBody UserMailSendDto userMailSendDto) {

@@ -9,4 +9,6 @@ public class Constants {
 
     public static final String PREFIX_CACHE_KEY_FOR_POST = "posts_by_profile_";
 
+    public static final String JWT_EXTRACT_ID = "http://auth:8080/auth/jwt/getId";
+
 }

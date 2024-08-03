@@ -41,8 +41,8 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UpdateMapper updateMapper;
     private final RestTemplate restTemplate;
-    private static final String EMAIL_EXIST_URL = "http://localhost:8080/profiles/emailExist";
-    private static final String DELETE_PROFILE_URL = "http://localhost:8080/profiles/delete/";
+    private static final String EMAIL_EXIST_URL = "http://profile:8082/profiles/emailExist";
+    private static final String DELETE_PROFILE_URL = "http://profile:8082/profiles/delete/";
 
     // CRUD ----------------------------
 
@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
 
         if (passwordEncoder.matches(userRequestLoginDto.getPassword(), user.getPassword())) {
 
-            URI url = URI.create("http://localhost:8082/profiles/" + user.getId());
+            URI url = URI.create("http://profile:8082/profiles/" + user.getId());
 
             kafkaService.userLoginNotificationSendEvent(userRequestLoginDto, url);
             log.info("user with id: %s and username: %s logged into your account"

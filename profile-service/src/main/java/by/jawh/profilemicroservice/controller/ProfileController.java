@@ -16,7 +16,11 @@ public class ProfileController {
 
     private final ProfileServiceImpl profileService;
     private final ProfileRepository profileRepository;
-    private final MinioService minioService;
+
+    @GetMapping("/health")
+    public ResponseEntity<?> healthCheck() {
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping()
     public ResponseEntity<?> findAllProfiles() {
@@ -46,11 +50,11 @@ public class ProfileController {
     @PostMapping("/emailExist")
     public ResponseEntity<Boolean> checkEmail(@RequestBody String email) {
         if (profileRepository.findByEmail(email).isEmpty())
-            return ResponseEntity.ok().body(true);
-        else if (profileRepository.findByEmail(email).isPresent())
             return ResponseEntity.ok().body(false);
+        else if (profileRepository.findByEmail(email).isPresent())
+            return ResponseEntity.ok().body(true);
         else
-            throw new RuntimeException("реузльтат find by email не null и не какое то значение");
+            throw new RuntimeException("результат find by email не null и не какое то значение");
     }
 
 

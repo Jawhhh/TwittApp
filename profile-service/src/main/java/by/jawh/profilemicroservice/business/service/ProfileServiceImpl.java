@@ -90,7 +90,6 @@ public class ProfileServiceImpl implements ProfileService {
 
         profileEntity.setAvatarUrl(minioService.getObjectUrl(bucketName, objectName));
 
-//        profileEntity.setAvatarUrl("http://localhost:9000/%s/%s".formatted(bucketName, objectName));
         profileRepository.saveAndFlush(profileEntity);
         log.info("user with id: %s upload new avatar");
         return profileEntity.getAvatarUrl();

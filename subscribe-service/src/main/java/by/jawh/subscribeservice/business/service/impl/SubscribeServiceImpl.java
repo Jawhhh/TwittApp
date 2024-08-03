@@ -2,15 +2,20 @@ package by.jawh.subscribeservice.business.service.impl;
 
 import by.jawh.eventsforalltopics.events.UserRegisteredSubscribeEvent;
 import by.jawh.subscribeservice.business.service.SubscribeService;
-import by.jawh.subscribeservice.common.entity.ProfileEntity;
+import by.jawh.subscribeservice.common.entity.SubscriptionEntity;
+import by.jawh.subscribeservice.common.entity.SubscriptionId;
 import by.jawh.subscribeservice.common.entity.UserEntity;
-import by.jawh.subscribeservice.common.repository.ProfileRepository;
+import by.jawh.subscribeservice.common.repository.SubscriptionRepository;
 import by.jawh.subscribeservice.common.repository.UserRepository;
+import by.jawh.subscribeservice.exception.ProfileNotFoundException;
+import by.jawh.subscribeservice.exception.SubscriptionNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.ProviderNotFoundException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -19,42 +24,36 @@ import java.util.TreeSet;
 @RequiredArgsConstructor
 public class SubscribeServiceImpl implements SubscribeService {
 
-    private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
+    private final SubscriptionRepository subscriptionRepository;
     private final AuthorizeService authorizeService;
 
     @Transactional
     @Override
     public void saveProfile(UserRegisteredSubscribeEvent userRegisteredSubscribeEvent) {
 
-        userRepository.save(UserEntity
-                .builder()
+        UserEntity user = UserEntity.builder()
                 .id(userRegisteredSubscribeEvent.getId())
-                .build());
-
-        profileRepository.saveAndFlush(ProfileEntity
-                .builder()
-                .userId(userRegisteredSubscribeEvent.getId())
-                .subscriber(new TreeSet<>())
-                .publisher(new TreeSet<>())
-                .build());
+                .subscribers(new HashSet<>())
+                .subscriptions(new HashSet<>())
+                .build();
+        userRepository.saveAndFlush(user);
     }
 
     @Transactional
     @Override
     public boolean subscribe(String token, Long publisherId) {
-
         Long subscriberId = authorizeService.getProfileIdFromJwt(token);
 
-        // * проверка есть ли такой пользователь
-        userRepository.findById(publisherId)
-                .orElseThrow(() ->
-                        new ProviderNotFoundException("profile with id: %s not found".formatted(publisherId)));
+        UserEntity publisher = userRepository.findById(publisherId).orElseThrow();
+        UserEntity subscriber = userRepository.findById(subscriberId).orElseThrow();
 
-        profileRepository.addSubscriber(subscriberId, publisherId);
-        profileRepository.addPublisher(subscriberId, publisherId);
+        SubscriptionEntity subscription = new SubscriptionEntity();
+        subscription.setId(new SubscriptionId(publisherId, subscriberId));
+        subscription.setUser(publisher);
+        subscription.setSubscriber(subscriber);
+        subscriptionRepository.saveAndFlush(subscription);
 
-        profileRepository.flush();
         return true;
     }
 
@@ -64,51 +63,48 @@ public class SubscribeServiceImpl implements SubscribeService {
 
         Long subscriberId = authorizeService.getProfileIdFromJwt(token);
 
-        UserEntity publisherUser = userRepository.findById(publisherId)
+        UserEntity publisher = userRepository.findById(publisherId)
                 .orElseThrow(() ->
-                        new ProviderNotFoundException("profile with id: %s not found".formatted(publisherId)));
-        UserEntity subscriberUser = userRepository.findById(subscriberId)
+                        new ProfileNotFoundException("user with id: %s not found".formatted(publisherId)));
+        UserEntity subscriber = userRepository.findById(subscriberId)
                 .orElseThrow(() ->
-                        new ProviderNotFoundException("profile with id: %s not found".formatted(subscriberId)));
+                        new ProfileNotFoundException("user with id: %s not found".formatted(publisherId)));
 
-        profileRepository.findById(subscriberId)
-                .map(profile -> profile.getPublisher().remove(publisherUser));
+        SubscriptionEntity subscriptionEntity = subscriptionRepository
+                .findById(new SubscriptionId(publisherId, subscriberId))
+                .orElseThrow(() -> new SubscriptionNotFoundException(
+                        "subscription with publisher: %s and subscriber: %s not found"
+                                .formatted(publisherId, subscriberId)));
 
-        profileRepository.findById(publisherId)
-                .map(profile -> profile.getSubscriber().remove(subscriberUser));
+        subscriptionRepository.delete(subscriptionEntity);
+        subscriptionRepository.flush();
 
-        profileRepository.flush();
         return true;
     }
 
     @Override
-    public Set<UserEntity> getSubscribers(Long profileId) {
-        return profileRepository.findById(profileId)
-                .map(ProfileEntity::getSubscriber)
-                .orElseThrow(() ->
-                        new ProviderNotFoundException("profile with id: %s not found".formatted(profileId)));
+    public List<Long> getSubscribers(Long id) {
+        return subscriptionRepository.getSubscribers(id);
     }
 
     @Override
-    public Set<UserEntity> getPublishers(Long profileId) {
-        return profileRepository.findById(profileId)
-                .map(ProfileEntity::getPublisher)
-                .orElseThrow(() ->
-                        new ProviderNotFoundException("profile with id: %s not found".formatted(profileId)));
+    public List<Long> getPublishers(Long id) {
+        return subscriptionRepository.getPublishers(id);
     }
 
     @Override
-    public ProfileEntity findByCurrentUser(String token) {
-        Long profileId = authorizeService.getProfileIdFromJwt(token);
-        return profileRepository.findById(profileId)
+    public UserEntity findByCurrentUser(String token) {
+        Long id = authorizeService.getProfileIdFromJwt(token);
+        return userRepository.findById(id)
                 .orElseThrow(() ->
-                        new ProviderNotFoundException("profile with id: %s not found".formatted(profileId)));
+                        new ProfileNotFoundException("user with id: %s not found".formatted(id)));
     }
 
-    public ProfileEntity findById(Long profileId) {
-        return profileRepository.findById(profileId)
+    @Override
+    public UserEntity findById(Long id) {
+        return userRepository.findById(id)
                 .orElseThrow(() ->
-                        new ProviderNotFoundException("profile with id: %s not found".formatted(profileId)));
+                        new ProfileNotFoundException("user with id: %s not found".formatted(id)));
     }
 
 

@@ -16,6 +16,11 @@ public class PostController {
 
     private final PostServiceImpl postService;
 
+    @GetMapping("/health")
+    public ResponseEntity<?> healthCheck() {
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(postService.findById(id));

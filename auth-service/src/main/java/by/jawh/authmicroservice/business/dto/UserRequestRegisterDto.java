@@ -29,11 +29,12 @@ public class UserRequestRegisterDto {
     @Past(message = "Дата рождения должна быть в прошлом")
     private LocalDate bornDate;
 
+    @Size(min = 4, max = 24, message = "Имя пользователя должно быть от 4 до 24 символов")
+    @NotBlank(message = "Имя пользователя не может быть пустым")
+    private String username;
+
     @Size(min = 8, max = 20, message = "Длина пароля должна быть от 8 до 20 символов")
     @NotBlank(message = "Пароль не может быть пустым")
     private String password;
 
-    @Size(min = 4, max = 24, message = "Имя пользователя должно быть от 4 до 24 символов")
-    @NotBlank(message = "Имя пользователя не может быть пустым")
-    private String username;
 }

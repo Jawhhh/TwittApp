@@ -8,11 +8,7 @@ spring:
   application:
     name: post-service
   config:
-    import: 'configserver:http://localhost:8888'
+    import: 'configserver:http://config:8888'
   cloud:
     config:
       fail-fast: true
-  jpa:
-    properties:
-      hibernate:
-        show_sql: true

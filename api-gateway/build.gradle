@@ -28,17 +28,12 @@ dependencies {
 
     // spring cloud
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    implementation "org.springframework.cloud:spring-cloud-starter-config"
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
-    // security
-//    implementation 'org.springframework.boot:spring-boot-starter-security'
-//    implementation 'org.springframework.security:spring-security-oauth2-client'
 
     // springboot
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-    // other
-//    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
 
     // utils
     compileOnly 'org.projectlombok:lombok'

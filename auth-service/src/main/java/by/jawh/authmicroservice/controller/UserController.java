@@ -22,14 +22,13 @@ public class UserController {
     private final UserServiceImpl userService;
     private final JwtService jwtService;
 
-    @GetMapping("/test")
-    public ResponseEntity<?> get() {
-        return ResponseEntity.ok().body("Get something from auth microservice");
+    @GetMapping("/health")
+    public ResponseEntity<?> healthCheck() {
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable("id") Long id) {
-        log.info("holla");
         return ResponseEntity.ok().body(userService.findById(id));
     }
 
@@ -54,7 +53,6 @@ public class UserController {
                 .userDetailsService()
                 .loadUserByUsername(jwtService.extractUsername(jwtToken));
 
-        //TODO exception handler
         return ResponseEntity.ok().body(jwtService.isTokenValid(jwtToken, userDetails));
     }
 

@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter implements GatewayFilter {
     public ResponseEntity<Boolean> checkValidJwtToken(String jwtToken) {
         URI url;
         try {
-            url = new URI("http://localhost:8081/api/users/validateToken?jwtToken=" + jwtToken);
+            url = new URI("http://auth:8081/api/users/validateToken?jwtToken=" + jwtToken);
         }catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

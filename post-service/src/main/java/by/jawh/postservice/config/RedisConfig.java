@@ -18,7 +18,6 @@ public class RedisConfig {
 
     @Bean
     public JedisPool jedisPool() {
-        // Настройка конфигурации пула
         GenericObjectPoolConfig<Jedis> poolConfig = new GenericObjectPoolConfig<>();
         poolConfig.setMaxTotal(8);
         poolConfig.setMaxIdle(8);
@@ -28,7 +27,6 @@ public class RedisConfig {
         poolConfig.setTestWhileIdle(true);
         poolConfig.setJmxEnabled(false);
 
-        // Создание пула Jedis без JMX
         return new JedisPool(poolConfig, redisHost, redisPort);
     }
 }
