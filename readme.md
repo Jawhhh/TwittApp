@@ -22,7 +22,7 @@ Provides functions: authorization, authentication, working with your profile, su
 ## The main microservices :
 - auth service - user registration and authentication 
 - profile service - profile management
-- post service - post management (selection of posts by various filters, pagination), likes, dislikes and comments
+- post service - post management, selection of posts, likes and comments
 - email notification service - sending notifications to email
 - subscribe service - manage user subscriptions
 
